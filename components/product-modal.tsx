@@ -2,19 +2,12 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
-import { X, Heart, ChevronLeft, ChevronRight } from 'lucide-react'
+import { X, Heart, ChevronLeft, ChevronRight, ShoppingBag } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
-
-interface Product {
-  id: number
-  title: string
-  price: string
-  image: string
-  description: string
-  sizes: string[]
-  images: string[]
-}
+import { Badge } from '@/components/ui/badge'
+import { Product } from '@/types'
+import { formatPrice } from '@/lib/product-utils'
 
 interface ProductModalProps {
   product: Product | null
@@ -39,6 +32,15 @@ export function ProductModal({ product, isOpen, onClose }: ProductModalProps) {
     setCurrentImageIndex((prev) => 
       prev === 0 ? product.images.length - 1 : prev - 1
     )
+  }
+
+  const handleAddToCart = () => {
+    if (!selectedSize) {
+      alert('Please select a size')
+      return
+    }
+    // TODO: Implement add to cart logic
+    console.log('Adding to cart:', { product, selectedSize })
   }
 
   return (
@@ -76,6 +78,21 @@ export function ProductModal({ product, isOpen, onClose }: ProductModalProps) {
                   </Button>
                 </>
               )}
+
+              {/* Image Indicators */}
+              {product.images.length > 1 && (
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2">
+                  {product.images.map((_, index) => (
+                    <button
+                      key={index}
+                      className={`w-2 h-2 rounded-full transition-colors ${
+                        index === currentImageIndex ? 'bg-white' : 'bg-white/50'
+                      }`}
+                      onClick={() => setCurrentImageIndex(index)}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
             
             {/* Close Button */}
@@ -88,58 +105,99 @@ export function ProductModal({ product, isOpen, onClose }: ProductModalProps) {
               <X className="w-4 h-4" />
             </Button>
           </div>
-
+          
           {/* Product Details */}
-          <div className="p-8">
+          <div className="p-6 md:p-8">
             <div className="flex items-start justify-between mb-4">
-              <h2 className="text-2xl font-playfair font-bold text-gray-900">{product.title}</h2>
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">{product.title}</h2>
+                {product.category && (
+                  <Badge variant="secondary" className="mb-2">
+                    {product.category}
+                  </Badge>
+                )}
+              </div>
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={() => setIsWishlisted(!isWishlisted)}
-                className={`${isWishlisted ? 'text-red-500' : 'text-gray-400'} hover:text-red-500`}
+                className="shrink-0"
               >
-                <Heart className={`w-6 h-6 ${isWishlisted ? 'fill-current' : ''}`} />
+                <Heart
+                  className={`w-5 h-5 ${
+                    isWishlisted ? 'fill-red-500 text-red-500' : 'text-gray-600'
+                  }`}
+                />
               </Button>
             </div>
-            
-            <p className="text-3xl font-bold text-gray-900 mb-6">{product.price}</p>
-            
-            <p className="text-gray-600 mb-8 leading-relaxed">{product.description}</p>
-            
+
+            <p className="text-3xl font-bold text-gray-900 mb-4">
+              {formatPrice(product.price)}
+            </p>
+
+            <p className="text-gray-600 mb-6 leading-relaxed">
+              {product.description}
+            </p>
+
+            {/* Stock Status */}
+            {product.inStock === false && (
+              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                <p className="text-red-600 text-sm font-medium">Out of Stock</p>
+              </div>
+            )}
+
             {/* Size Selection */}
-            <div className="mb-8">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Select Size</h3>
-              <div className="flex flex-wrap gap-3">
+            <div className="mb-6">
+              <h3 className="text-sm font-medium text-gray-900 mb-3">Size</h3>
+              <div className="flex flex-wrap gap-2">
                 {product.sizes.map((size) => (
                   <Button
                     key={size}
                     variant={selectedSize === size ? "default" : "outline"}
-                    className={`w-12 h-12 ${
-                      selectedSize === size 
-                        ? 'bg-gray-900 text-white' 
-                        : 'border-gray-300 text-gray-700 hover:border-gray-900'
-                    }`}
+                    size="sm"
                     onClick={() => setSelectedSize(size)}
+                    className="min-w-[60px]"
                   >
                     {size}
                   </Button>
                 ))}
               </div>
             </div>
-            
-            {/* Add to Cart Button */}
-            <Button
-              size="lg"
-              className="w-full fill-button bg-gray-900 text-white hover:bg-gray-800 py-3 text-lg font-medium"
-              disabled={!selectedSize}
-            >
-              Add to Cart
-            </Button>
-            
-            {!selectedSize && (
-              <p className="text-sm text-gray-500 mt-2 text-center">Please select a size</p>
-            )}
+
+            {/* Action Buttons */}
+            <div className="space-y-3">
+              <Button
+                onClick={handleAddToCart}
+                disabled={!product.inStock}
+                className="w-full bg-black text-white hover:bg-gray-800 py-3"
+              >
+                <ShoppingBag className="w-4 h-4 mr-2" />
+                {product.inStock ? 'Add to Cart' : 'Out of Stock'}
+              </Button>
+              
+              <Button
+                variant="outline"
+                className="w-full py-3"
+                onClick={() => {
+                  // TODO: Implement buy now logic
+                  console.log('Buy now:', product)
+                }}
+                disabled={!product.inStock}
+              >
+                Buy Now
+              </Button>
+            </div>
+
+            {/* Product Features */}
+            <div className="mt-8 pt-6 border-t border-gray-200">
+              <h4 className="text-sm font-medium text-gray-900 mb-3">Features</h4>
+              <ul className="text-sm text-gray-600 space-y-1">
+                <li>• Premium quality fabric</li>
+                <li>• Comfortable fit</li>
+                <li>• Easy care instructions</li>
+                <li>• Elegant design</li>
+              </ul>
+            </div>
           </div>
         </div>
       </DialogContent>
