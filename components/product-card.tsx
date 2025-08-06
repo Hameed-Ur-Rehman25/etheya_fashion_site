@@ -91,17 +91,19 @@ export function ProductCard({
           </Button>
         )}
 
-        {/* Stock Status */}
-        {!product.inStock && (
-          <div className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 text-xs rounded">
-            Out of Stock
-          </div>
-        )}
-
-        {/* Featured Badge */}
-        {product.featured && (
-          <div className="absolute top-2 left-2 bg-blue-500 text-white px-2 py-1 text-xs rounded">
-            Featured
+        {/* Badges: Out of Stock & Featured */}
+        {(product.featured || !product.inStock) && (
+          <div className="absolute top-2 left-2 flex flex-col space-y-1 z-10">
+            {!product.inStock && (
+              <div className="bg-red-500 text-white px-2 py-1 text-xs rounded">
+                Out of Stock
+              </div>
+            )}
+            {product.featured && (
+              <div className="bg-blue-500 text-white px-2 py-1 text-xs rounded">
+                Featured
+              </div>
+            )}
           </div>
         )}
       </div>
