@@ -49,7 +49,9 @@ export function sortProducts(products: Product[], sortBy: SearchFilters['sortBy'
 }
 
 export function extractNumericPrice(price: string): number {
-  return parseInt(price.replace(/[^\d]/g, '')) || 0
+  // Extract the first number (integer or decimal) from the string
+  const match = price.match(/(\d+(\.\d+)?)/);
+  return match ? parseFloat(match[0]) : 0;
 }
 
 export function generateProductSlug(title: string): string {
