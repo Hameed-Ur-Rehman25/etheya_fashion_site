@@ -8,7 +8,7 @@ const playfair = Playfair_Display({ subsets: ['latin'], variable: '--font-playfa
 export const metadata: Metadata = {
   title: 'Aura - Modern South Asian Fashion',
   description: 'Elegant women\'s clothing collection featuring T-shirts, stitched & unstitched suits',
-    generator: 'v0.dev'
+  generator: 'v0.dev'
 }
 
 export default function RootLayout({
