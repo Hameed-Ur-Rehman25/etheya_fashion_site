@@ -29,18 +29,37 @@ export function Navbar() {
       }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            {/* Left - Menu Button */}
+            {/* Left - Menu Button (Mobile only) or Desktop Navigation Links */}
             <div className="flex items-center">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="text-gray-700 hover:text-gray-900 hover:bg-transparent"
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              >
-                <div className="transition-transform hover:scale-110">
-                  {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-                </div>
-              </Button>
+              {/* Mobile Menu Button */}
+              <div className="md:hidden">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-gray-700 hover:text-gray-900 hover:bg-transparent"
+                  onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                >
+                  <div className="transition-transform hover:scale-110">
+                    {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                  </div>
+                </Button>
+              </div>
+
+              {/* Desktop Navigation Links */}
+              <div className="hidden md:flex items-center space-x-8">
+                <Link href="/" className="text-gray-700 hover:text-gray-900 transition-colors font-happy-monkey text-base">
+                  Home
+                </Link>
+                <Link href="/products" className="text-gray-700 hover:text-gray-900 transition-colors font-happy-monkey text-base">
+                  All Products
+                </Link>
+                <Link href="/about" className="text-gray-700 hover:text-gray-900 transition-colors font-happy-monkey text-base">
+                  About
+                </Link>
+                <Link href="/contact" className="text-gray-700 hover:text-gray-900 transition-colors font-happy-monkey text-base">
+                  Contact
+                </Link>
+              </div>
             </div>
 
             {/* Center - Logo */}
@@ -96,9 +115,9 @@ export function Navbar() {
             </div>
           </div>
 
-          {/* Mobile Menu */}
+          {/* Mobile Menu - Only visible on mobile */}
           {isMobileMenuOpen && (
-            <div className="border-t border-gray-200 py-4 bg-white">
+            <div className="md:hidden border-t border-gray-200 py-4 bg-white">
               <div className="flex flex-col space-y-4 px-4">
                 <Link 
                   href="/" 

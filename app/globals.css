@@ -46,18 +46,53 @@
   content: '';
   position: absolute;
   top: 0;
-  right: 100%;
+  left: -100%;
   width: 100%;
   height: 100%;
-  background-color: currentColor;
-  transition: right 0.3s ease;
+  background-color: black;
+  transition: left 0.3s ease;
   z-index: -1;
 }
 
 .fill-button:hover::before {
-  right: 0;
+  left: 0;
 }
 
 .fill-button:hover {
   color: white;
+}
+
+/* Hero section text animations */
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+/* Stagger animation for text elements */
+.animate-fade-in-up h1 {
+  animation-delay: 0.1s;
+  opacity: 0;
+  animation-fill-mode: forwards;
+}
+
+.animate-fade-in-up p {
+  animation-delay: 0.3s;
+  opacity: 0;
+  animation-fill-mode: forwards;
+}
+
+.animate-fade-in-up button {
+  animation-delay: 0.5s;
+  opacity: 0;
+  animation-fill-mode: forwards;
 }

@@ -11,8 +11,8 @@ const happyMonkey = Happy_Monkey({
 })
 
 export const metadata: Metadata = {
-  title: 'Aura - Modern South Asian Fashion',
-  description: 'Elegant women\'s clothing collection featuring T-shirts, stitched & unstitched suits',
+  title: 'Etheya',
+  description: 'Elegant women\'s clothing collection stitched & unstitched suits',
   generator: 'v0.dev'
 }
 
