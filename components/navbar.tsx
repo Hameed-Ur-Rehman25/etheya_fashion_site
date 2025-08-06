@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Search, ShoppingBag, User, Heart, Menu, X } from 'lucide-react'
+import Image from 'next/image'
+import { Search, ShoppingCart, User, Heart, Menu, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { SearchModal } from './search-modal'
 import { CartDrawer } from './cart-drawer'
@@ -28,92 +29,104 @@ export function Navbar() {
       }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            {/* Logo */}
-            <Link href="/" className="flex items-center">
-              <span className="text-2xl font-playfair font-bold text-gray-900">Aura</span>
-            </Link>
-
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-8">
-              <Link href="/" className="text-gray-700 hover:text-gray-900 transition-colors">
-                Home
-              </Link>
-              <Link href="/products" className="text-gray-700 hover:text-gray-900 transition-colors">
-                All Products
-              </Link>
-              <Link href="/categories" className="text-gray-700 hover:text-gray-900 transition-colors">
-                Categories
-              </Link>
-              <Link href="/about" className="text-gray-700 hover:text-gray-900 transition-colors">
-                About
-              </Link>
-              <Link href="/contact" className="text-gray-700 hover:text-gray-900 transition-colors">
-                Contact
-              </Link>
+            {/* Left - Menu Button */}
+            <div className="flex items-center">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="text-gray-700 hover:text-gray-900 hover:bg-transparent"
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              >
+                <div className="transition-transform hover:scale-110">
+                  {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                </div>
+              </Button>
             </div>
 
+            {/* Center - Logo */}
+            <Link href="/" className="flex items-center space-x-2 absolute left-1/2 transform -translate-x-1/2">
+              <div className="relative w-8 h-8">
+                <Image
+                  src="/assets/logo.png"
+                  alt="Etheya Logo"
+                  width={32}
+                  height={32}
+                  className="object-contain"
+                />
+              </div>
+              <span className="text-2xl font-happy-monkey text-gray-900">Etheya</span>
+            </Link>
+
             {/* Right Icons */}
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-1">
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={() => setIsSearchOpen(true)}
-                className="text-gray-700 hover:text-gray-900"
+                className="text-gray-700 hover:text-gray-900 hover:bg-transparent"
               >
-                <Search className="w-5 h-5" />
+                <div className="transition-transform hover:scale-110">
+                  <Search className="w-6 h-6" />
+                </div>
               </Button>
               <Link href="/wishlist">
-                <Button variant="ghost" size="icon" className="text-gray-700 hover:text-gray-900">
-                  <Heart className="w-5 h-5" />
-                </Button>
-              </Link>
-              <Link href="/profile">
-                <Button variant="ghost" size="icon" className="text-gray-700 hover:text-gray-900">
-                  <User className="w-5 h-5" />
+                <Button variant="ghost" size="icon" className="text-gray-700 hover:text-gray-900 hover:bg-transparent">
+                  <div className="transition-transform hover:scale-110">
+                    <Heart className="w-6 h-6" />
+                  </div>
                 </Button>
               </Link>
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={() => setIsCartOpen(true)}
-                className="text-gray-700 hover:text-gray-900 relative"
+                className="text-gray-700 hover:text-gray-900 hover:bg-transparent"
               >
-                <ShoppingBag className="w-5 h-5" />
-                <span className="absolute -top-1 -right-1 bg-gray-900 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                  3
-                </span>
+                <div className="transition-transform hover:scale-110">
+                  <ShoppingCart className="w-6 h-6" />
+                </div>
               </Button>
-
-              {/* Mobile Menu Button */}
-              <Button
-                variant="ghost"
-                size="icon"
-                className="md:hidden text-gray-700 hover:text-gray-900"
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              >
-                {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-              </Button>
+              <Link href="/profile">
+                <Button variant="ghost" size="icon" className="text-gray-700 hover:text-gray-900 hover:bg-transparent">
+                  <div className="transition-transform hover:scale-110">
+                    <User className="w-6 h-6" />
+                  </div>
+                </Button>
+              </Link>
             </div>
           </div>
 
           {/* Mobile Menu */}
           {isMobileMenuOpen && (
-            <div className="md:hidden border-t border-gray-200 py-4">
-              <div className="flex flex-col space-y-4">
-                <Link href="/" className="text-gray-700 hover:text-gray-900 transition-colors">
+            <div className="border-t border-gray-200 py-4 bg-white">
+              <div className="flex flex-col space-y-4 px-4">
+                <Link 
+                  href="/" 
+                  className="text-gray-700 hover:text-gray-900 transition-colors py-2"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
                   Home
                 </Link>
-                <Link href="/products" className="text-gray-700 hover:text-gray-900 transition-colors">
+                <Link 
+                  href="/products" 
+                  className="text-gray-700 hover:text-gray-900 transition-colors py-2"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
                   All Products
                 </Link>
-                <Link href="/categories" className="text-gray-700 hover:text-gray-900 transition-colors">
-                  Categories
-                </Link>
-                <Link href="/about" className="text-gray-700 hover:text-gray-900 transition-colors">
-                  About
-                </Link>
-                <Link href="/contact" className="text-gray-700 hover:text-gray-900 transition-colors">
+                <Link 
+                  href="/contact" 
+                  className="text-gray-700 hover:text-gray-900 transition-colors py-2"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
                   Contact
+                </Link>
+                <Link 
+                  href="/about" 
+                  className="text-gray-700 hover:text-gray-900 transition-colors py-2"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  About us
                 </Link>
               </div>
             </div>
