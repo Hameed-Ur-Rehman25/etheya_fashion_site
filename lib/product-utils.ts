@@ -3,7 +3,7 @@ import { Product, SearchFilters } from '@/types'
 export function formatPrice(price: string | number): string {
   if (typeof price === 'string') {
     // Extract numeric value from string like "Rs. 7,560"
-    const numeric = parseInt(price.replace(/[^\d]/g, ''))
+    const numeric = parseFloat(price.replace(/[^\d.]/g, ''))
     return `Rs. ${numeric.toLocaleString()}`
   }
   return `Rs. ${price.toLocaleString()}`
