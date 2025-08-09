@@ -67,28 +67,28 @@ export const CATEGORIES: Category[] = [
   {
     id: 1,
     title: 'UNSTITCHED',
-    image: '/placeholder.svg?height=500&width=300',
+    image: '/assets/image.png',
     description: 'Premium fabric collections',
     slug: 'unstitched'
   },
   {
     id: 2,
     title: 'FORMAL',
-    image: '/placeholder.svg?height=500&width=300',
+    image: '/assets/image.png',
     description: 'Elegant formal wear',
     slug: 'formal'
   },
   {
     id: 3,
     title: 'READY TO WEAR',
-    image: '/placeholder.svg?height=500&width=300',
+    image: '/assets/image.png',
     description: 'Contemporary designs',
     slug: 'ready-to-wear'
   },
   {
     id: 4,
     title: 'LUXURY LAWN',
-    image: '/placeholder.svg?height=500&width=300',
+    image: '/assets/image.png',
     description: 'Summer essentials',
     slug: 'luxury-lawn'
   }

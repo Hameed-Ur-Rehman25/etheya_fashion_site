@@ -102,7 +102,7 @@ export function HeroSection() {
             
             <Button
               size="lg"
-              className="fill-button bg-transparent border-2 border-black text-black hover:text-white px-8 py-3 text-lg font-medium transition-all duration-300"
+              className="fill-button bg-transparent border-2 border-black text-black px-8 py-3 text-lg font-medium transition-all duration-300"
             >
               {displayImage.buttonText}
             </Button>
@@ -122,7 +122,7 @@ export function HeroSection() {
             
             <Button
               size="lg"
-              className="fill-button bg-transparent border-2 border-black text-black hover:text-white px-8 py-3 text-lg font-medium transition-all duration-300 transform hover:scale-105 animate-fade-in-up"
+              className="fill-button bg-transparent border-2 border-black text-black px-8 py-3 text-lg font-medium transition-all duration-300 transform hover:scale-105 animate-fade-in-up"
             >
               {displayImage.buttonText}
             </Button>
