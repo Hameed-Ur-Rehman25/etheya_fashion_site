@@ -1,11 +1,10 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { Filter, Grid, List, ChevronDown } from 'lucide-react'
+import { Filter, LayoutGrid, ChevronDown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Navbar } from '@/components/navbar'
-import { ProductGrid } from '@/components/product-grid'
-import { ProductModal } from '@/components/product-modal'
+import { SimpleProductGrid } from '@/components/simple-product-grid'
 import { Footer } from '@/components/footer'
 import { SectionContainer } from '@/components/section-container'
 import { Slider } from '@/components/ui/slider'
@@ -26,13 +25,12 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet'
 import { PRODUCTS, CATEGORIES, SIZES, COLORS, SORT_OPTIONS, PRICE_RANGES } from '@/lib/constants'
-import { Product, ViewMode, SearchFilters } from '@/types'
+import { Product, SearchFilters } from '@/types'
 import { filterProducts, sortProducts } from '@/lib/product-utils'
 
 export default function ProductsPage() {
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
   const [wishlistedIds, setWishlistedIds] = useState<Set<number>>(new Set())
-  const [viewMode, setViewMode] = useState<ViewMode>('grid')
+  const [viewMode] = useState<'simple'>('simple')
   const [isFilterOpen, setIsFilterOpen] = useState(false)
   
   const [filters, setFilters] = useState<SearchFilters>({
@@ -245,18 +243,10 @@ export default function ProductsPage() {
                   {/* View Mode Toggle */}
                   <div className="flex border rounded-lg p-1">
                     <Button
-                      variant={viewMode === 'grid' ? 'default' : 'ghost'}
+                      variant="default"
                       size="sm"
-                      onClick={() => setViewMode('grid')}
                     >
-                      <Grid className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      variant={viewMode === 'list' ? 'default' : 'ghost'}
-                      size="sm"
-                      onClick={() => setViewMode('list')}
-                    >
-                      <List className="w-4 h-4" />
+                      <LayoutGrid className="w-4 h-4" />
                     </Button>
                   </div>
                 </div>
@@ -277,14 +267,13 @@ export default function ProductsPage() {
               </div>
 
               {/* Product Grid */}
-              <ProductGrid
+              <SimpleProductGrid
                 products={filteredAndSortedProducts}
-                viewMode={viewMode}
-                onQuickView={setSelectedProduct}
                 onAddToCart={handleAddToCart}
                 onToggleWishlist={handleToggleWishlist}
                 wishlistedIds={wishlistedIds}
                 emptyStateMessage="No products match your current filters"
+                columns={4}
               />
             </div>
           </div>
@@ -292,12 +281,6 @@ export default function ProductsPage() {
       </main>
 
       <Footer />
-
-      <ProductModal
-        product={selectedProduct}
-        isOpen={!!selectedProduct}
-        onClose={() => setSelectedProduct(null)}
-      />
     </div>
   )
 }
