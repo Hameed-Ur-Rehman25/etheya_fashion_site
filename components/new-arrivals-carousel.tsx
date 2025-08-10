@@ -8,6 +8,7 @@ import { ProductModal } from './product-modal'
 import { SectionContainer } from './section-container'
 import { PRODUCTS } from '@/lib/constants'
 import { Product } from '@/types'
+import { Lens } from '@/components/ui/lens'
 
 export function NewArrivalsCarousel() {
   const [currentIndex, setCurrentIndex] = useState(0)
@@ -32,18 +33,22 @@ export function NewArrivalsCarousel() {
 
   return (
     <>
-      <SectionContainer background="gray" padding="xl">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-playfair font-bold text-gray-900 mb-4">
-            New Arrivals
-          </h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            Discover the latest additions to our collection, featuring contemporary designs 
-            and timeless elegance
-          </p>
-        </div>
-        
-        <div className="relative max-w-6xl mx-auto">
+      <section 
+        className="relative py-20 px-6 bg-cover bg-center bg-no-repeat overflow-hidden"
+        style={{ backgroundImage: 'url(/assets/bg1.png)', backgroundBlendMode: 'overlay', backgroundColor: 'rgba(255, 255, 255, 0.8)' }}
+      >
+        <div className="relative z-10 max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-playfair font-bold text-gray-900 mb-4">
+              New Arrivals
+            </h2>
+            <p className="text-gray-800 max-w-2xl mx-auto">
+              Discover the latest additions to our collection, featuring contemporary designs 
+              and timeless elegance
+            </p>
+          </div>
+          
+          <div className="relative max-w-6xl mx-auto">
           {/* Navigation Arrows */}
           <Button
             variant="outline"
@@ -70,25 +75,27 @@ export function NewArrivalsCarousel() {
               {/* Large Image */}
               <div className="relative group">
                 <div className="relative overflow-hidden rounded-lg bg-white shadow-lg">
-                  <Image
-                    src={currentProduct.image || "/placeholder.svg"}
-                    alt={currentProduct.title}
-                    width={500}
-                    height={600}
-                    className="object-cover w-[500px] h-[600px] group-hover:scale-105 transition-transform duration-500"
-                  />
+                  <Lens zoomFactor={1.8} lensSize={200}>
+                    <Image
+                      src="/assets/image3.jpeg"
+                      alt={currentProduct.title}
+                      width={500}
+                      height={600}
+                      className="object-cover w-[500px] h-[600px] group-hover:scale-105 transition-transform duration-500"
+                    />
+                  </Lens>
                   
                   {/* Wishlist Button */}
                   <Button
                     size="icon"
                     variant="outline"
-                    className="absolute top-4 right-4 bg-white/80 backdrop-blur-sm hover:bg-white rounded-full"
+                    className="absolute top-4 right-4 bg-white/80 backdrop-blur-sm hover:bg-white rounded-full z-30"
                   >
                     <Heart className="w-5 h-5" />
                   </Button>
                   
                   {/* Beautiful New Tag - Always Show */}
-                  <div className="absolute top-4 left-4 group">
+                  <div className="absolute top-4 left-4 group z-30">
                     <div className="relative">
                       {/* Tag Shape */}
                       <div className="bg-gradient-to-r from-red-500 to-pink-500 text-white px-4 py-2 text-sm font-semibold shadow-lg transform transition-all duration-300 group-hover:scale-105">
@@ -109,13 +116,15 @@ export function NewArrivalsCarousel() {
               {/* Small Image with Product Details */}
               <div className="w-52 flex flex-col">
                 <div className="relative overflow-hidden rounded-lg bg-white shadow-md mb-6">
-                  <Image
-                    src={currentProduct.images?.[1] || currentProduct.image || "/placeholder.svg"}
-                    alt={`${currentProduct.title} - view 2`}
-                    width={200}
-                    height={280}
-                    className="object-cover w-full h-[280px] hover:scale-105 transition-transform duration-300"
-                  />
+                  <Lens zoomFactor={1.6} lensSize={150}>
+                    <Image
+                      src="/assets/image3.jpeg"
+                      alt={`${currentProduct.title} - view 2`}
+                      width={200}
+                      height={280}
+                      className="object-cover w-full h-[280px] hover:scale-105 transition-transform duration-300"
+                    />
+                  </Lens>
                 </div>
                 
                 {/* Product Details Section - Under Small Image */}
@@ -177,7 +186,8 @@ export function NewArrivalsCarousel() {
             ))}
           </div>
         </div>
-      </SectionContainer>
+        </div>
+      </section>
 
       <ProductModal
         product={selectedProduct}

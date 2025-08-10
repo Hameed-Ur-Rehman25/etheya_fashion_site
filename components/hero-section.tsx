@@ -16,12 +16,12 @@ interface HeroImage {
 
 const heroImages: HeroImage[] = [
   {
-    src: "/assets/image1.png",
+    src: "/assets/image3.jpeg",
     alt: "Hero background with models in South Asian clothing - Image 1",
     title: "Elegance Redefined",
     subtitle: "Discover our exquisite collection of modern South Asian fashion",
     buttonText: "Shop Now",
-    contentPosition: "left"
+    contentPosition: "right"
   },
   {
     src: "/assets/image2.png", 

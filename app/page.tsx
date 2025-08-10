@@ -7,6 +7,8 @@ import { Navbar } from '@/components/navbar'
 import { HeroSection } from '@/components/hero-section'
 import { CategorySection } from '@/components/category-section'
 import { NewArrivalsCarousel } from '@/components/new-arrivals-carousel'
+import { Spotlight } from "@/components/ui/spotlight"
+import { ReviewsSection } from '@/components/reviews-section'
 
 import { ProductCard } from '@/components/ProductCard'
 
@@ -53,16 +55,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Newsletter Section */}
-      <section className="py-16 px-6 bg-gray-50">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl font-bold text-gray-800 mb-4">WHAT ARE YOU WAITING FOR</h2>
-          <p className="text-gray-600 mb-8 max-w-2xl mx-auto">
-            Subscribe to our newsletter and be the first to know about our latest collections, 
-            exclusive offers, and fashion updates.
-          </p>
-        </div>
-      </section>
+      {/* Reviews Section */}
+      <ReviewsSection />
 
       {/* All Products Section */}
       <section className="py-16 px-6 bg-white">
@@ -86,6 +80,41 @@ export default function HomePage() {
             <Button className="bg-black text-white hover:bg-gray-800 px-8 py-3">
               View More
             </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Newsletter Section */}
+      <section className="relative py-16 px-6 bg-black/[0.96] overflow-hidden">
+        {/* Grid pattern background */}
+        <div className="pointer-events-none absolute inset-0 [background-size:40px_40px] select-none [background-image:linear-gradient(to_right,#171717_1px,transparent_1px),linear-gradient(to_bottom,#171717_1px,transparent_1px)]" />
+        
+        {/* Spotlight effect */}
+        <Spotlight
+          className="-top-40 left-0 md:-top-20 md:left-60"
+          fill="white"
+        />
+        
+        <div className="relative z-10 max-w-4xl mx-auto text-center">
+          <h2 className="bg-gradient-to-b from-neutral-50 to-neutral-400 bg-clip-text text-3xl md:text-4xl font-bold text-transparent mb-4">
+            WHAT ARE YOU WAITING FOR
+          </h2>
+          <p className="text-neutral-300 mb-8 max-w-2xl mx-auto">
+            Subscribe to our newsletter and be the first to know about our latest collections, 
+            exclusive offers, and fashion updates.
+          </p>
+          
+          <div className="flex justify-center max-w-md mx-auto">
+            <div className="flex space-x-2 w-full">
+              <Input
+                type="email"
+                placeholder="Enter your email"
+                className="flex-1 bg-white text-black border-white/20"
+              />
+              <Button className="bg-white text-black hover:bg-gray-100 px-6">
+                Subscribe
+              </Button>
+            </div>
           </div>
         </div>
       </section>
