@@ -3,12 +3,12 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import { ChevronLeft, ChevronRight, Heart } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { Button } from '@/shared/components/ui/button'
 import { ProductModal } from './product-modal'
 import { SectionContainer } from './section-container'
 import { PRODUCTS } from '@/lib/constants'
 import { Product } from '@/types'
-import { Lens } from '@/components/ui/lens'
+import { Lens } from '@/shared/components/ui/lens'
 
 export function NewArrivalsCarousel() {
   const [currentIndex, setCurrentIndex] = useState(0)

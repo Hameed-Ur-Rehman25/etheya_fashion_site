@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import { Search, X } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Dialog, DialogContent } from '@/components/ui/dialog'
+import { Button } from '@/shared/components/ui/button'
+import { Input } from '@/shared/components/ui/input'
+import { Dialog, DialogContent } from '@/shared/components/ui/dialog'
 import Image from 'next/image'
 
 const searchResults = [
@@ -50,7 +50,7 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
               type="text"
               placeholder="Search for products..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
               className="pl-10 pr-4 py-3 text-lg"
               autoFocus
             />

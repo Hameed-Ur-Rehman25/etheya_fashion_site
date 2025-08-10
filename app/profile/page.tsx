@@ -3,8 +3,8 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import { User, Package, MapPin, Heart, LogOut, Edit } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Navbar } from '@/components/navbar'
+import { Button } from '@/shared/components/ui/button'
+import { Navbar } from '@/shared/components/layout/navbar'
 
 const tabs = [
   { id: 'orders', label: 'My Orders', icon: Package },

@@ -1,8 +1,8 @@
 "use client";
 
 import React from "react";
-import { InfiniteMovingCards } from "@/components/ui/infinite-moving-cards";
-import { Spotlight } from "@/components/ui/spotlight";
+import { InfiniteMovingCards } from "@/shared/components/ui/infinite-moving-cards";
+import { Spotlight } from "@/shared/components/ui/spotlight";
 
 export function ReviewsSection() {
   return (

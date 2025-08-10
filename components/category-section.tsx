@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { Button } from '@/components/ui/button'
+import { Button } from '@/shared/components/ui/button'
 import { SectionContainer } from './section-container'
 import { CATEGORIES } from '@/lib/constants'
 

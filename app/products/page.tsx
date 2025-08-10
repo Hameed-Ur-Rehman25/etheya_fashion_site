@@ -1,128 +1,77 @@
 'use client'
 
-import { useState, useMemo } from 'react'
-import { Filter, LayoutGrid, ChevronDown } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Navbar } from '@/components/navbar'
-import { SimpleProductGrid } from '@/components/simple-product-grid'
+import { useState } from 'react'
+import { Filter, LayoutGrid } from 'lucide-react'
+import { Navbar } from '@/shared/components/layout/navbar'
+import { ProductGrid } from '@/features/products'
+import { useProducts, useProductFilters } from '@/features/products'
+import { useCart } from '@/features/cart'
+import { useWishlist } from '@/features/wishlist'
+import { CartDrawer } from '@/features/cart'
+import { SearchModal } from '@/components/search-modal'
 import { Footer } from '@/components/footer'
 import { SectionContainer } from '@/components/section-container'
-import { Slider } from '@/components/ui/slider'
-import { Checkbox } from '@/components/ui/checkbox'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import { 
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from '@/components/ui/sheet'
-import { PRODUCTS, CATEGORIES, SIZES, COLORS, SORT_OPTIONS, PRICE_RANGES } from '@/lib/constants'
-import { Product, SearchFilters } from '@/types'
-import { filterProducts, sortProducts } from '@/lib/product-utils'
+import { Button } from '@/shared/components/ui/button'
+import { Slider } from '@/shared/components/ui/slider'
+import { Checkbox } from '@/shared/components/ui/checkbox'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select'
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/shared/components/ui/sheet'
+import { PRODUCTS, CATEGORIES } from '@/data/products.data'
+import { SIZES, SORT_OPTIONS, PRICE_RANGES } from '@/shared/constants/app.constants'
 
 export default function ProductsPage() {
-  const [wishlistedIds, setWishlistedIds] = useState<Set<number>>(new Set())
-  const [viewMode] = useState<'simple'>('simple')
+  const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [isFilterOpen, setIsFilterOpen] = useState(false)
-  
-  const [filters, setFilters] = useState<SearchFilters>({
-    categories: [],
-    sizes: [],
-    priceRange: [PRICE_RANGES.MIN, PRICE_RANGES.MAX],
-    sortBy: 'newest'
-  })
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
 
-  // Apply filters and sorting
-  const filteredAndSortedProducts = useMemo(() => {
-    const filtered = filterProducts(PRODUCTS, filters)
-    return sortProducts(filtered, filters.sortBy)
-  }, [filters])
-
-  const handleCategoryChange = (category: string, checked: boolean) => {
-    setFilters(prev => ({
-      ...prev,
-      categories: checked
-        ? [...prev.categories, category]
-        : prev.categories.filter(c => c !== category)
-    }))
-  }
-
-  const handleSizeChange = (size: string, checked: boolean) => {
-    setFilters(prev => ({
-      ...prev,
-      sizes: checked
-        ? [...prev.sizes, size]
-        : prev.sizes.filter(s => s !== size)
-    }))
-  }
-
-  const handlePriceRangeChange = (value: number[]) => {
-    setFilters(prev => ({
-      ...prev,
-      priceRange: [value[0], value[1]]
-    }))
-  }
-
-  const handleSortChange = (sortBy: SearchFilters['sortBy']) => {
-    setFilters(prev => ({
-      ...prev,
-      sortBy
-    }))
-  }
-
-  const clearAllFilters = () => {
-    setFilters({
+  // Initialize products and filters
+  const products = useProducts({ 
+    initialProducts: PRODUCTS,
+    initialFilters: {
       categories: [],
       sizes: [],
       priceRange: [PRICE_RANGES.MIN, PRICE_RANGES.MAX],
       sortBy: 'newest'
-    })
+    }
+  })
+
+  const filters = useProductFilters({
+    onFiltersChange: (newFilters) => {
+      products.updateFilters(newFilters)
+    }
+  })
+
+  const cart = useCart()
+  const wishlist = useWishlist()
+
+  const handleAddToCart = (product: any, size?: string) => {
+    cart.addItem(product, size)
   }
 
-  const handleAddToCart = (product: Product) => {
-    console.log('Add to cart:', product)
-  }
-
-  const handleToggleWishlist = (product: Product) => {
-    setWishlistedIds(prev => {
-      const newSet = new Set(prev)
-      if (newSet.has(product.id)) {
-        newSet.delete(product.id)
-      } else {
-        newSet.add(product.id)
-      }
-      return newSet
-    })
+  const handleToggleWishlist = (product: any) => {
+    wishlist.toggleItem(product)
   }
 
   const FilterContent = () => (
     <div className="space-y-6">
       {/* Categories */}
       <div>
-        <h3 className="text-lg font-medium mb-4">Categories</h3>
+        <h3 className="text-lg font-medium text-gray-900 mb-4">Categories</h3>
         <div className="space-y-3">
           {CATEGORIES.map((category) => (
             <div key={category.id} className="flex items-center space-x-2">
               <Checkbox
                 id={`category-${category.id}`}
-                checked={filters.categories.includes(category.title)}
+                checked={filters.filters.categories.includes(category.title)}
                 onCheckedChange={(checked) => 
-                  handleCategoryChange(category.title, checked as boolean)
+                  filters.updateCategory(category.title, checked as boolean)
                 }
               />
-              <label 
+              <label
                 htmlFor={`category-${category.id}`}
                 className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
               >
-                {category.title}
+                {category.title} ({category.productCount})
               </label>
             </div>
           ))}
@@ -131,20 +80,20 @@ export default function ProductsPage() {
 
       {/* Sizes */}
       <div>
-        <h3 className="text-lg font-medium mb-4">Sizes</h3>
+        <h3 className="text-lg font-medium text-gray-900 mb-4">Sizes</h3>
         <div className="grid grid-cols-3 gap-2">
           {SIZES.map((size) => (
             <div key={size} className="flex items-center space-x-2">
               <Checkbox
                 id={`size-${size}`}
-                checked={filters.sizes.includes(size)}
+                checked={filters.filters.sizes.includes(size)}
                 onCheckedChange={(checked) => 
-                  handleSizeChange(size, checked as boolean)
+                  filters.updateSize(size, checked as boolean)
                 }
               />
-              <label 
+              <label
                 htmlFor={`size-${size}`}
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                className="text-sm font-medium leading-none"
               >
                 {size}
               </label>
@@ -155,125 +104,147 @@ export default function ProductsPage() {
 
       {/* Price Range */}
       <div>
-        <h3 className="text-lg font-medium mb-4">
-          Price Range: Rs. {filters.priceRange[0].toLocaleString()} - Rs. {filters.priceRange[1].toLocaleString()}
-        </h3>
-        <Slider
-          value={filters.priceRange}
-          onValueChange={handlePriceRangeChange}
-          max={PRICE_RANGES.MAX}
-          min={PRICE_RANGES.MIN}
-          step={PRICE_RANGES.STEP}
-          className="w-full"
-        />
-      </div>
-
-      {/* Colors */}
-      <div>
-        <h3 className="text-lg font-medium mb-4">Colors</h3>
-        <div className="flex flex-wrap gap-2">
-          {COLORS.map((color) => (
-            <div
-              key={color}
-              className="w-8 h-8 rounded-full border-2 border-gray-300 cursor-pointer hover:border-gray-900 transition-colors"
-              style={{ backgroundColor: color.toLowerCase() }}
-              title={color}
-            />
-          ))}
+        <h3 className="text-lg font-medium text-gray-900 mb-4">Price Range</h3>
+        <div className="space-y-4">
+          <Slider
+            value={filters.filters.priceRange}
+            onValueChange={(value) => filters.updatePriceRange(value as [number, number])}
+            max={PRICE_RANGES.MAX}
+            min={PRICE_RANGES.MIN}
+            step={PRICE_RANGES.STEP}
+            className="w-full"
+          />
+          <div className="flex items-center justify-between text-sm text-gray-600">
+            <span>Rs. {filters.filters.priceRange[0].toLocaleString()}</span>
+            <span>Rs. {filters.filters.priceRange[1].toLocaleString()}</span>
+          </div>
         </div>
       </div>
 
-      <Button
-        variant="outline"
-        className="w-full"
-        onClick={clearAllFilters}
-      >
-        Clear All Filters
-      </Button>
+      {/* Clear Filters */}
+      {filters.hasActiveFilters && (
+        <Button
+          variant="outline"
+          onClick={filters.clearAllFilters}
+          className="w-full"
+        >
+          Clear All Filters ({filters.activeFiltersCount})
+        </Button>
+      )}
     </div>
   )
 
   return (
     <div className="min-h-screen bg-white">
-      <Navbar />
+      <Navbar 
+        cartItemCount={cart.itemCount}
+        wishlistItemCount={wishlist.itemCount}
+        onSearchToggle={() => setIsSearchOpen(true)}
+        onCartToggle={cart.toggleCart}
+        onWishlistClick={() => window.location.href = '/wishlist'}
+      />
       
       <main className="pt-16">
         <SectionContainer>
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">All Products</h1>
-            <p className="text-gray-600">
-              Showing {filteredAndSortedProducts.length} of {PRODUCTS.length} products
-            </p>
+          {/* Header */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">Products</h1>
+              <p className="text-gray-600 mt-2">
+                Discover our complete collection ({products.totalCount} items)
+              </p>
+            </div>
+
+            <div className="flex items-center gap-3">
+              {/* Sort */}
+              <Select
+                value={filters.filters.sortBy}
+                onValueChange={(value) => filters.updateSortBy(value as any)}
+              >
+                <SelectTrigger className="w-48">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {SORT_OPTIONS.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              {/* View Mode */}
+              <div className="hidden sm:flex border rounded-lg">
+                <Button
+                  variant={viewMode === 'grid' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setViewMode('grid')}
+                  className="rounded-r-none"
+                >
+                  <LayoutGrid className="w-4 h-4" />
+                </Button>
+                <Button
+                  variant={viewMode === 'list' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setViewMode('list')}
+                  className="rounded-l-none"
+                >
+                  <Filter className="w-4 h-4" />
+                </Button>
+              </div>
+
+              {/* Mobile Filter Button */}
+              <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
+                <SheetTrigger asChild>
+                  <Button variant="outline" className="sm:hidden">
+                    <Filter className="w-4 h-4 mr-2" />
+                    Filters
+                    {filters.hasActiveFilters && (
+                      <span className="ml-1 bg-blue-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                        {filters.activeFiltersCount}
+                      </span>
+                    )}
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="left" className="w-80">
+                  <SheetHeader>
+                    <SheetTitle>Filter Products</SheetTitle>
+                    <SheetDescription>
+                      Refine your search to find exactly what you're looking for.
+                    </SheetDescription>
+                  </SheetHeader>
+                  <div className="mt-6">
+                    <FilterContent />
+                  </div>
+                </SheetContent>
+              </Sheet>
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-            {/* Desktop Filters */}
-            <div className="hidden lg:block">
-              <div className="sticky top-24">
+          <div className="lg:grid lg:grid-cols-12 lg:gap-8">
+            {/* Desktop Filters Sidebar */}
+            <div className="hidden lg:block lg:col-span-3">
+              <div className="sticky top-24 bg-white border rounded-lg p-6">
+                <h2 className="text-lg font-medium text-gray-900 mb-6">Filters</h2>
                 <FilterContent />
               </div>
             </div>
 
-            {/* Products */}
-            <div className="lg:col-span-3">
-              {/* Controls */}
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-                <div className="flex items-center gap-2">
-                  {/* Mobile Filter Button */}
-                  <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
-                    <SheetTrigger asChild>
-                      <Button variant="outline" className="lg:hidden">
-                        <Filter className="w-4 h-4 mr-2" />
-                        Filters
-                      </Button>
-                    </SheetTrigger>
-                    <SheetContent side="left" className="w-80">
-                      <SheetHeader>
-                        <SheetTitle>Filters</SheetTitle>
-                        <SheetDescription>
-                          Filter products by category, size, price, and more
-                        </SheetDescription>
-                      </SheetHeader>
-                      <div className="mt-6">
-                        <FilterContent />
-                      </div>
-                    </SheetContent>
-                  </Sheet>
-
-                  {/* View Mode Toggle */}
-                  <div className="flex border rounded-lg p-1">
-                    <Button
-                      variant="default"
-                      size="sm"
-                    >
-                      <LayoutGrid className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
-
-                {/* Sort Dropdown */}
-                <Select value={filters.sortBy} onValueChange={handleSortChange}>
-                  <SelectTrigger className="w-48">
-                    <SelectValue placeholder="Sort by" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {SORT_OPTIONS.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Product Grid */}
-              <SimpleProductGrid
-                products={filteredAndSortedProducts}
+            {/* Products Grid */}
+            <div className="lg:col-span-9">
+              <ProductGrid
+                products={products.filteredProducts}
+                viewMode={viewMode}
+                columns={viewMode === 'grid' ? 3 : 1}
                 onAddToCart={handleAddToCart}
                 onToggleWishlist={handleToggleWishlist}
-                wishlistedIds={wishlistedIds}
-                emptyStateMessage="No products match your current filters"
-                columns={4}
+                wishlistedIds={wishlist.getWishlistedIds()}
+                loading={products.loading}
+                emptyStateMessage={
+                  products.hasFilters 
+                    ? "No products match your current filters" 
+                    : "No products found"
+                }
               />
             </div>
           </div>
@@ -281,6 +252,24 @@ export default function ProductsPage() {
       </main>
 
       <Footer />
+
+      {/* Modals and Drawers */}
+      <CartDrawer
+        isOpen={cart.isOpen}
+        onClose={cart.closeCart}
+        items={cart.cart.items}
+        onUpdateQuantity={cart.updateQuantity}
+        onRemoveItem={cart.removeItem}
+        onClearCart={cart.clearCart}
+        totalPrice={cart.cart.totalPrice}
+        totalItems={cart.cart.totalItems}
+        loading={cart.loading}
+      />
+
+      <SearchModal
+        isOpen={isSearchOpen}
+        onClose={() => setIsSearchOpen(false)}
+      />
     </div>
   )
 }
