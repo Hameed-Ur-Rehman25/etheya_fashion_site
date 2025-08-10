@@ -1,12 +1,14 @@
+
 import Image from "next/image"
-import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Search, Heart, ShoppingBag, User, Sparkles } from 'lucide-react'
+import { Heart } from 'lucide-react'
 import { Navbar } from '@/components/navbar'
 import { HeroSection } from '@/components/hero-section'
 import { CategorySection } from '@/components/category-section'
 import { NewArrivalsCarousel } from '@/components/new-arrivals-carousel'
+
+import { ProductCard } from '@/components/ProductCard'
 
 export default function HomePage() {
   return (
@@ -18,60 +20,35 @@ export default function HomePage() {
         <NewArrivalsCarousel />
       </main>
 
-      {/* Product Grid Section */}
+      {/* This Week Top 4 */}
       <section className="py-16 px-6 bg-white">
         <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-playfair font-bold text-gray-900 mb-4">
+              This Week's Top 4
+            </h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              Discover our most popular pieces this week, handpicked by fashion enthusiasts
+            </p>
+          </div>
+          
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="group cursor-pointer">
-                <div className="relative overflow-hidden bg-gray-50 rounded-lg">
-                  <Image
-                    src="/placeholder.svg?height=400&width=300"
-                    alt={`Brown traditional outfit ${i + 1}`}
-                    width={300}
-                    height={400}
-                    className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
-                  />
-                </div>
-                <div className="mt-4 text-center">
-                  <Button className="bg-black text-white hover:bg-gray-800 px-6 py-2 text-sm">
-                    Shop Now
-                  </Button>
-                </div>
-              </div>
+              <ProductCard
+                key={i}
+                imageSrc="/placeholder.svg?height=400&width=300"
+                alt={`Top seller ${i + 1}`}
+                title={`Premium Collection #${i + 1}`}
+                description="Elegant design with modern aesthetics"
+                price="PKR 34,900"
+                oldPrice="PKR 49,900"
+                discount="30% OFF"
+                showWishlist
+                showDiscount
+                showOldPrice
+                buttonLabel="Add to Cart"
+              />
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* All Products Section */}
-      <section className="py-16 px-6 bg-white">
-        <div className="max-w-7xl mx-auto">
-          <h2 className="text-3xl font-light text-center mb-12 text-gray-800">All Products</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {Array.from({ length: 12 }).map((_, i) => (
-              <div key={i} className="group cursor-pointer">
-                <div className="relative overflow-hidden bg-gray-50 rounded-lg">
-                  <Image
-                    src="/placeholder.svg?height=400&width=300"
-                    alt={`Traditional outfit ${i + 1}`}
-                    width={300}
-                    height={400}
-                    className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
-                  />
-                </div>
-                <div className="mt-4 text-center">
-                  <h3 className="text-sm font-medium text-gray-800 mb-1">Traditional Outfit</h3>
-                  <p className="text-sm text-gray-600 mb-2">Premium Collection</p>
-                  <p className="text-lg font-semibold text-gray-900 mb-3">$299</p>
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="text-center mt-12">
-            <Button className="bg-black text-white hover:bg-gray-800 px-8 py-3">
-              View More
-            </Button>
           </div>
         </div>
       </section>
@@ -87,28 +64,28 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* This Week Top 4 */}
+      {/* All Products Section */}
       <section className="py-16 px-6 bg-white">
         <div className="max-w-7xl mx-auto">
-          <h2 className="text-3xl font-light text-center mb-12 text-gray-800">This Week Top 4</h2>
+          <h2 className="text-3xl font-light text-center mb-12 text-gray-800">All Products</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="group cursor-pointer">
-                <div className="relative overflow-hidden bg-gray-50 rounded-lg">
-                  <Image
-                    src="/placeholder.svg?height=400&width=300"
-                    alt={`Top seller ${i + 1}`}
-                    width={300}
-                    height={400}
-                    className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
-                  />
-                </div>
-                <div className="mt-4 text-center">
-                  <h3 className="text-sm font-medium text-gray-800 mb-1">Best Seller</h3>
-                  <p className="text-lg font-semibold text-gray-900">$349</p>
-                </div>
-              </div>
+            {Array.from({ length: 12 }).map((_, i) => (
+              <ProductCard
+                key={i}
+                imageSrc="/placeholder.svg?height=400&width=300"
+                alt={`Traditional outfit ${i + 1}`}
+                title="Traditional Outfit"
+                description="Premium Collection"
+                price="PKR 29,900"
+                buttonLabel="Shop Now"
+                buttonClass="bg-black text-white hover:bg-gray-800"
+              />
             ))}
+          </div>
+          <div className="text-center mt-12">
+            <Button className="bg-black text-white hover:bg-gray-800 px-8 py-3">
+              View More
+            </Button>
           </div>
         </div>
       </section>
