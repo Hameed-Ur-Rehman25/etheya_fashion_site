@@ -24,7 +24,8 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet'
-import { PRODUCTS, CATEGORIES, SIZES, COLORS, SORT_OPTIONS, PRICE_RANGES } from '@/lib/constants'
+import { PRODUCTS } from '@/src/data/products.data'
+import { CATEGORIES, SIZES, COLORS, SORT_OPTIONS, PRICE_RANGES } from '@/lib/constants'
 import { Product, SearchFilters } from '@/types'
 import { filterProducts, sortProducts } from '@/lib/product-utils'
 

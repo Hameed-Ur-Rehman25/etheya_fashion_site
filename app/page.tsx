@@ -3,6 +3,7 @@
 
 import { useState } from 'react'
 import Image from "next/image"
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Heart } from 'lucide-react'
@@ -11,6 +12,7 @@ import { HeroSection } from '@/components/hero-section'
 import { CategorySection } from '@/components/category-section'
 import { NewArrivalsCarousel } from '@/components/new-arrivals-carousel'
 import { SimpleProductGrid } from '@/components/simple-product-grid'
+import { SimpleProductCard } from '@/components/simple-product-card'
 import { Spotlight } from "@/components/ui/spotlight"
 import { ReviewsSection } from '@/components/reviews-section'
 import { Product } from '@/types'
@@ -111,20 +113,13 @@ export default function HomePage() {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <ProductCard
-                key={i}
-                imageSrc="/placeholder.svg?height=400&width=300"
-                alt={`Top seller ${i + 1}`}
-                title={`Premium Collection #${i + 1}`}
-                description="Elegant design with modern aesthetics"
-                price="PKR 34,900"
-                oldPrice="PKR 49,900"
-                discount="30% OFF"
-                showWishlist
-                showDiscount
-                showOldPrice
-                buttonLabel="Add to Cart"
+            {TEST_PRODUCTS.slice(0, 4).map((product) => (
+              <SimpleProductCard
+                key={product.id}
+                product={product}
+                onAddToCart={handleAddToCart}
+                onToggleWishlist={handleToggleWishlist}
+                isWishlisted={wishlistedIds.has(product.id)}
               />
             ))}
           </div>
@@ -137,7 +132,14 @@ export default function HomePage() {
       {/* All Products Section */}
       <section className="py-16 px-6 bg-white">
         <div className="max-w-7xl mx-auto">
-          <h2 className="text-3xl font-light text-center mb-12 text-gray-800">All Products</h2>
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-playfair font-bold text-gray-900 mb-4">
+              All Products
+            </h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              Discover our complete collection of premium fashion pieces
+            </p>
+          </div>
           <SimpleProductGrid
             products={TEST_PRODUCTS}
             columns={4}
@@ -146,9 +148,11 @@ export default function HomePage() {
             wishlistedIds={wishlistedIds}
           />
           <div className="text-center mt-12">
-            <Button className="bg-black text-white hover:bg-gray-800 px-8 py-3">
-              View More
-            </Button>
+            <Link href="/products">
+              <Button className="bg-black text-white hover:bg-gray-800 px-8 py-3">
+                View More
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
