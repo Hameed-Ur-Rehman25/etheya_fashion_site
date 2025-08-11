@@ -1,8 +1,8 @@
 'use client'
 
-import { Product, ViewMode } from '@/features/products/types/product.types'
+import { Product, ViewMode } from '../types/product.types'
 import { ProductCard } from './product-card'
-import { cn } from '@/shared/utils/cn'
+import { cn } from '@/lib/utils'
 
 interface ProductGridProps {
   products: Product[]

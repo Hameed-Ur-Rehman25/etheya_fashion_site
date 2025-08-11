@@ -37,6 +37,12 @@
       "@/hooks/*": [
         "./hooks/*"
       ],
+      "@/src/*": [
+        "./src/*"
+      ],
+      "@/features/*": [
+        "./src/features/*"
+      ],
       "@/app/*": [
         "./app/*"
       ]

@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from 'react'
 import { WishlistItem, Wishlist } from '../types/wishlist.types'
-import { Product } from '@/features/products/types/product.types'
+import { Product } from '../../products/types/product.types'
 
 const WISHLIST_STORAGE_KEY = 'etheya-wishlist'
 

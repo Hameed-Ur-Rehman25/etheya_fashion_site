@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from 'react'
 import { CartItem, Cart, CartSummary } from '../types/cart.types'
-import { Product } from '@/features/products/types/product.types'
-import { extractNumericPrice } from '@/features/products/utils/product.utils'
+import { Product } from '../../products/types/product.types'
+import { extractNumericPrice } from '../../products/utils/product.utils'
 
 const CART_STORAGE_KEY = 'etheya-cart'
 

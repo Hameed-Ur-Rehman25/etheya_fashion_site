@@ -2,9 +2,9 @@
 
 import React from 'react'
 import { Heart } from 'lucide-react'
-import { Button } from '@/shared/components/ui/button'
-import { Product } from '@/features/products/types/product.types'
-import { cn } from '@/shared/utils/cn'
+import { Button } from '@/components/ui/button'
+import { Product } from '../../products/types/product.types'
+import { cn } from '@/lib/utils'
 
 interface WishlistButtonProps {
   product: Product

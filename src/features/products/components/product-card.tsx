@@ -3,10 +3,10 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import { Heart, Plus } from 'lucide-react'
-import { Button } from '@/shared/components/ui/button'
-import { Product, ViewMode } from '@/features/products/types/product.types'
-import { formatPrice } from '@/features/products/utils/product.utils'
-import { cn } from '@/shared/utils/cn'
+import { Button } from '@/components/ui/button'
+import { Product, ViewMode } from '../types/product.types'
+import { formatPrice } from '../utils/product.utils'
+import { cn } from '@/lib/utils'
 
 interface ProductCardProps {
   product: Product

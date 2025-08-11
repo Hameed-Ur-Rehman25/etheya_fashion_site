@@ -3,11 +3,11 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import { X, Plus, Minus, Trash2, ShoppingBag } from 'lucide-react'
-import { Button } from '@/shared/components/ui/button'
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/shared/components/ui/sheet'
-import { Badge } from '@/shared/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
+import { Badge } from '@/components/ui/badge'
 import { CartItem } from '../types/cart.types'
-import { formatPrice } from '@/features/products/utils/product.utils'
+import { formatPrice } from '../../products/utils/product.utils'
 
 interface CartDrawerProps {
   isOpen: boolean
