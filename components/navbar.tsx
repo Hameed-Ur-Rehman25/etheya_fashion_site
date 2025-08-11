@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Search, ShoppingCart, User, Heart, Menu, X } from 'lucide-react'
+import { Search, ShoppingBag, User, Heart, Menu, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { SearchModal } from './search-modal'
 import { CartDrawer } from './cart-drawer'
@@ -77,7 +77,7 @@ export function Navbar() {
             </Link>
 
             {/* Right Icons */}
-            <div className="flex items-center space-x-1">
+            <div className="flex space-x-0">
               <Button
                 variant="ghost"
                 size="icon"
@@ -96,14 +96,12 @@ export function Navbar() {
                 </Button>
               </Link>
               <Button
-                variant="ghost"
-                size="icon"
+                variant="outline"
                 onClick={() => setIsCartOpen(true)}
-                className="text-gray-700 hover:text-gray-900 hover:bg-transparent"
+                className="bg-transparent border-black text-black hover:bg-black hover:text-white rounded-full px-4 py-2 h-auto flex items-center gap-2 transition-all"
               >
-                <div className="transition-transform hover:scale-110">
-                  <ShoppingCart className="w-6 h-6" />
-                </div>
+                <span className="font-medium font-happy-monkey">My Cart</span>
+                <ShoppingBag className="w-5 h-5" />
               </Button>
               <Link href="/profile">
                 <Button variant="ghost" size="icon" className="text-gray-700 hover:text-gray-900 hover:bg-transparent">
