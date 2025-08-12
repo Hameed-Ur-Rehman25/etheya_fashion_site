@@ -1,148 +1,128 @@
-import Image from "next/image"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Search, Heart, ShoppingBag, User, Sparkles } from 'lucide-react'
-import { Navbar } from '@/components/navbar'
+'use client'
+
+import { useState } from 'react'
+import { Navbar } from '@/shared/components/layout/navbar'
 import { HeroSection } from '@/components/hero-section'
 import { CategorySection } from '@/components/category-section'
 import { NewArrivalsCarousel } from '@/components/new-arrivals-carousel'
+import { ReviewsSection } from '@/components/reviews-section'
+import { ProductGrid } from '@/features/products'
+import { useCart } from '@/features/cart'
+import { useWishlist } from '@/features/wishlist'
+import { CartDrawer } from '@/features/cart'
+import { SearchModal } from '@/components/search-modal'
+import { PRODUCTS } from '@/data/products.data'
+import { Button } from '@/shared/components/ui/button'
 
 export default function HomePage() {
+  const [isSearchOpen, setIsSearchOpen] = useState(false)
+  const cart = useCart()
+  const wishlist = useWishlist()
+
+  // Get featured products for display
+  const featuredProducts = PRODUCTS.filter(product => product.featured)
+  const allProducts = PRODUCTS.slice(0, 8) // Show first 8 products
+
+  const handleAddToCart = (product: any, size?: string) => {
+    cart.addItem(product, size)
+    console.log('Added to cart:', product.title)
+  }
+
+  const handleToggleWishlist = (product: any) => {
+    wishlist.toggleItem(product)
+    console.log('Toggled wishlist:', product.title)
+  }
+
   return (
     <div className="min-h-screen bg-white">
-      <Navbar />
+      <Navbar 
+        cartItemCount={cart.itemCount}
+        wishlistItemCount={wishlist.itemCount}
+        onSearchToggle={() => setIsSearchOpen(true)}
+        onCartToggle={cart.toggleCart}
+        onWishlistClick={() => window.location.href = '/wishlist'}
+      />
+      
       <main className="pt-16">
+        {/* Hero Section */}
         <HeroSection />
+
+        {/* Category Section */}
         <CategorySection />
+
+        {/* New Arrivals */}
         <NewArrivalsCarousel />
+
+        {/* Featured Products Section */}
+        <section className="py-16 px-6 bg-gray-50">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">Featured Collection</h2>
+              <p className="text-gray-600 max-w-2xl mx-auto">
+                Discover our handpicked selection of premium clothing designed for the modern woman
+              </p>
+            </div>
+            
+            <ProductGrid
+              products={featuredProducts}
+              columns={4}
+              onAddToCart={handleAddToCart}
+              onToggleWishlist={handleToggleWishlist}
+              wishlistedIds={wishlist.getWishlistedIds()}
+            />
+          </div>
+        </section>
+
+        {/* Reviews Section */}
+        <ReviewsSection />
+
+        {/* All Products Section */}
+        <section className="py-16 px-6 bg-white">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">Latest Collection</h2>
+              <p className="text-gray-600 max-w-2xl mx-auto">
+                Explore our complete range of elegant designs and contemporary styles
+              </p>
+            </div>
+            
+            <ProductGrid
+              products={allProducts}
+              columns={4}
+              onAddToCart={handleAddToCart}
+              onToggleWishlist={handleToggleWishlist}
+              wishlistedIds={wishlist.getWishlistedIds()}
+            />
+            
+            <div className="text-center mt-12">
+              <Button 
+                className="bg-black text-white hover:bg-gray-800 px-8 py-3"
+                onClick={() => window.location.href = '/products'}
+              >
+                View All Products
+              </Button>
+            </div>
+          </div>
+        </section>
       </main>
 
-      {/* Product Grid Section */}
-      <section className="py-16 px-6 bg-white">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="group cursor-pointer">
-                <div className="relative overflow-hidden bg-gray-50 rounded-lg">
-                  <Image
-                    src="/placeholder.svg?height=400&width=300"
-                    alt={`Brown traditional outfit ${i + 1}`}
-                    width={300}
-                    height={400}
-                    className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
-                  />
-                </div>
-                <div className="mt-4 text-center">
-                  <Button className="bg-black text-white hover:bg-gray-800 px-6 py-2 text-sm">
-                    Shop Now
-                  </Button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* Modals and Drawers */}
+      <CartDrawer
+        isOpen={cart.isOpen}
+        onClose={cart.closeCart}
+        items={cart.cart.items}
+        onUpdateQuantity={cart.updateQuantity}
+        onRemoveItem={cart.removeItem}
+        onClearCart={cart.clearCart}
+        totalPrice={cart.cart.totalPrice}
+        totalItems={cart.cart.totalItems}
+        loading={cart.loading}
+      />
 
-      {/* All Products Section */}
-      <section className="py-16 px-6 bg-white">
-        <div className="max-w-7xl mx-auto">
-          <h2 className="text-3xl font-light text-center mb-12 text-gray-800">All Products</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {Array.from({ length: 12 }).map((_, i) => (
-              <div key={i} className="group cursor-pointer">
-                <div className="relative overflow-hidden bg-gray-50 rounded-lg">
-                  <Image
-                    src="/placeholder.svg?height=400&width=300"
-                    alt={`Traditional outfit ${i + 1}`}
-                    width={300}
-                    height={400}
-                    className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
-                  />
-                </div>
-                <div className="mt-4 text-center">
-                  <h3 className="text-sm font-medium text-gray-800 mb-1">Traditional Outfit</h3>
-                  <p className="text-sm text-gray-600 mb-2">Premium Collection</p>
-                  <p className="text-lg font-semibold text-gray-900 mb-3">$299</p>
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="text-center mt-12">
-            <Button className="bg-black text-white hover:bg-gray-800 px-8 py-3">
-              View More
-            </Button>
-          </div>
-        </div>
-      </section>
-
-      {/* Newsletter Section */}
-      <section className="py-16 px-6 bg-gray-50">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl font-bold text-gray-800 mb-4">WHAT ARE YOU WAITING FOR</h2>
-          <p className="text-gray-600 mb-8 max-w-2xl mx-auto">
-            Subscribe to our newsletter and be the first to know about our latest collections, 
-            exclusive offers, and fashion updates.
-          </p>
-        </div>
-      </section>
-
-      {/* This Week Top 4 */}
-      <section className="py-16 px-6 bg-white">
-        <div className="max-w-7xl mx-auto">
-          <h2 className="text-3xl font-light text-center mb-12 text-gray-800">This Week Top 4</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="group cursor-pointer">
-                <div className="relative overflow-hidden bg-gray-50 rounded-lg">
-                  <Image
-                    src="/placeholder.svg?height=400&width=300"
-                    alt={`Top seller ${i + 1}`}
-                    width={300}
-                    height={400}
-                    className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
-                  />
-                </div>
-                <div className="mt-4 text-center">
-                  <h3 className="text-sm font-medium text-gray-800 mb-1">Best Seller</h3>
-                  <p className="text-lg font-semibold text-gray-900">$349</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="bg-black text-white py-12">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Contact Us */}
-            <div>
-              <h3 className="text-xl font-semibold mb-4">Contact Us</h3>
-              <div className="space-y-2 text-gray-300">
-                <p>© Etheya | Islamabad Pakistan</p>
-                <p>info@etheya.com</p>
-              </div>
-            </div>
-
-            {/* Newsletter Signup */}
-            <div>
-              <h3 className="text-xl font-semibold mb-4">Join our Newsletter</h3>
-              <div className="flex space-x-2">
-                <Input
-                  type="email"
-                  placeholder="Enter your email"
-                  className="flex-1 bg-white text-black"
-                />
-                <Button className="bg-blue-600 hover:bg-blue-700 text-white px-6">
-                  Subscribe
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <SearchModal
+        isOpen={isSearchOpen}
+        onClose={() => setIsSearchOpen(false)}
+      />
     </div>
   )
 }

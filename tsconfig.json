@@ -28,6 +28,15 @@
       "@/components/*": [
         "./components/*"
       ],
+      "@/features/*": [
+        "./src/features/*"
+      ],
+      "@/shared/*": [
+        "./src/shared/*"
+      ],
+      "@/data/*": [
+        "./src/data/*"
+      ],
       "@/lib/*": [
         "./lib/*"
       ],
