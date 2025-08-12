@@ -34,6 +34,10 @@ export interface User {
 export interface SearchFilters {
   categories: string[]
   sizes: string[]
+  availability: string[]
+  types: string[]
+  fabrics: string[]
+  pieces: string[]
   priceRange: [number, number]
   sortBy: 'newest' | 'price-low' | 'price-high' | 'popular'
 }

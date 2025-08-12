@@ -1,14 +1,13 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { Filter, LayoutGrid, ChevronDown } from 'lucide-react'
+import { Filter, LayoutGrid } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Navbar } from '@/components/navbar'
 import { SimpleProductGrid } from '@/components/simple-product-grid'
 import { Footer } from '@/components/footer'
 import { SectionContainer } from '@/components/section-container'
-import { Slider } from '@/components/ui/slider'
-import { Checkbox } from '@/components/ui/checkbox'
+import { ProductFilterSidebar } from '@/components/product-filter-sidebar'
 import {
   Select,
   SelectContent,
@@ -25,7 +24,7 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet'
 import { PRODUCTS } from '@/src/data/products.data'
-import { CATEGORIES, SIZES, COLORS, SORT_OPTIONS, PRICE_RANGES } from '@/lib/constants'
+import { SORT_OPTIONS, PRICE_RANGES } from '@/lib/constants'
 import { Product, SearchFilters } from '@/types'
 import { filterProducts, sortProducts } from '@/lib/product-utils'
 
@@ -37,6 +36,10 @@ export default function ProductsPage() {
   const [filters, setFilters] = useState<SearchFilters>({
     categories: [],
     sizes: [],
+    availability: [],
+    types: [],
+    fabrics: [],
+    pieces: [],
     priceRange: [PRICE_RANGES.MIN, PRICE_RANGES.MAX],
     sortBy: 'newest'
   })
@@ -47,29 +50,21 @@ export default function ProductsPage() {
     return sortProducts(filtered, filters.sortBy)
   }, [filters])
 
-  const handleCategoryChange = (category: string, checked: boolean) => {
-    setFilters(prev => ({
-      ...prev,
-      categories: checked
-        ? [...prev.categories, category]
-        : prev.categories.filter(c => c !== category)
-    }))
+  const handleFiltersChange = (newFilters: SearchFilters) => {
+    setFilters(newFilters)
   }
 
-  const handleSizeChange = (size: string, checked: boolean) => {
-    setFilters(prev => ({
-      ...prev,
-      sizes: checked
-        ? [...prev.sizes, size]
-        : prev.sizes.filter(s => s !== size)
-    }))
-  }
-
-  const handlePriceRangeChange = (value: number[]) => {
-    setFilters(prev => ({
-      ...prev,
-      priceRange: [value[0], value[1]]
-    }))
+  const clearAllFilters = () => {
+    setFilters({
+      categories: [],
+      sizes: [],
+      availability: [],
+      types: [],
+      fabrics: [],
+      pieces: [],
+      priceRange: [PRICE_RANGES.MIN, PRICE_RANGES.MAX],
+      sortBy: 'newest'
+    })
   }
 
   const handleSortChange = (sortBy: SearchFilters['sortBy']) => {
@@ -77,15 +72,6 @@ export default function ProductsPage() {
       ...prev,
       sortBy
     }))
-  }
-
-  const clearAllFilters = () => {
-    setFilters({
-      categories: [],
-      sizes: [],
-      priceRange: [PRICE_RANGES.MIN, PRICE_RANGES.MAX],
-      sortBy: 'newest'
-    })
   }
 
   const handleAddToCart = (product: Product) => {
@@ -104,96 +90,6 @@ export default function ProductsPage() {
     })
   }
 
-  const FilterContent = () => (
-    <div className="space-y-6">
-      {/* Categories */}
-      <div>
-        <h3 className="text-lg font-medium mb-4">Categories</h3>
-        <div className="space-y-3">
-          {CATEGORIES.map((category) => (
-            <div key={category.id} className="flex items-center space-x-2">
-              <Checkbox
-                id={`category-${category.id}`}
-                checked={filters.categories.includes(category.title)}
-                onCheckedChange={(checked) => 
-                  handleCategoryChange(category.title, checked as boolean)
-                }
-              />
-              <label 
-                htmlFor={`category-${category.id}`}
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-              >
-                {category.title}
-              </label>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Sizes */}
-      <div>
-        <h3 className="text-lg font-medium mb-4">Sizes</h3>
-        <div className="grid grid-cols-3 gap-2">
-          {SIZES.map((size) => (
-            <div key={size} className="flex items-center space-x-2">
-              <Checkbox
-                id={`size-${size}`}
-                checked={filters.sizes.includes(size)}
-                onCheckedChange={(checked) => 
-                  handleSizeChange(size, checked as boolean)
-                }
-              />
-              <label 
-                htmlFor={`size-${size}`}
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-              >
-                {size}
-              </label>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Price Range */}
-      <div>
-        <h3 className="text-lg font-medium mb-4">
-          Price Range: Rs. {filters.priceRange[0].toLocaleString()} - Rs. {filters.priceRange[1].toLocaleString()}
-        </h3>
-        <Slider
-          value={filters.priceRange}
-          onValueChange={handlePriceRangeChange}
-          max={PRICE_RANGES.MAX}
-          min={PRICE_RANGES.MIN}
-          step={PRICE_RANGES.STEP}
-          className="w-full"
-        />
-      </div>
-
-      {/* Colors */}
-      <div>
-        <h3 className="text-lg font-medium mb-4">Colors</h3>
-        <div className="flex flex-wrap gap-2">
-          {COLORS.map((color) => (
-            <div
-              key={color}
-              className="w-8 h-8 rounded-full border-2 border-gray-300 cursor-pointer hover:border-gray-900 transition-colors"
-              style={{ backgroundColor: color.toLowerCase() }}
-              title={color}
-            />
-          ))}
-        </div>
-      </div>
-
-      <Button
-        variant="outline"
-        className="w-full"
-        onClick={clearAllFilters}
-      >
-        Clear All Filters
-      </Button>
-    </div>
-  )
-
   return (
     <div className="min-h-screen bg-white">
       <Navbar />
@@ -211,7 +107,11 @@ export default function ProductsPage() {
             {/* Desktop Filters */}
             <div className="hidden lg:block">
               <div className="sticky top-24">
-                <FilterContent />
+                <ProductFilterSidebar
+                  filters={filters}
+                  onFiltersChange={handleFiltersChange}
+                  onClearFilters={clearAllFilters}
+                />
               </div>
             </div>
 
@@ -228,15 +128,19 @@ export default function ProductsPage() {
                         Filters
                       </Button>
                     </SheetTrigger>
-                    <SheetContent side="left" className="w-80">
-                      <SheetHeader>
+                    <SheetContent side="left" className="w-80 p-0">
+                      <SheetHeader className="p-6 pb-0">
                         <SheetTitle>Filters</SheetTitle>
                         <SheetDescription>
                           Filter products by category, size, price, and more
                         </SheetDescription>
                       </SheetHeader>
                       <div className="mt-6">
-                        <FilterContent />
+                        <ProductFilterSidebar
+                          filters={filters}
+                          onFiltersChange={handleFiltersChange}
+                          onClearFilters={clearAllFilters}
+                        />
                       </div>
                     </SheetContent>
                   </Sheet>
