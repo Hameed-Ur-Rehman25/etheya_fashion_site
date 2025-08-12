@@ -3,7 +3,7 @@ import { Product, SearchFilters } from '@/types'
 export function formatPrice(price: string | number): string {
   if (typeof price === 'string') {
     // Extract numeric value from string like "Rs. 7,560"
-    const numeric = parseInt(price.replace(/[^\d]/g, ''))
+    const numeric = parseFloat(price.replace(/[^\d.]/g, ''))
     return `Rs. ${numeric.toLocaleString()}`
   }
   return `Rs. ${price.toLocaleString()}`
@@ -49,7 +49,9 @@ export function sortProducts(products: Product[], sortBy: SearchFilters['sortBy'
 }
 
 export function extractNumericPrice(price: string): number {
-  return parseInt(price.replace(/[^\d]/g, '')) || 0
+  // Extract the first number (integer or decimal) from the string
+  const match = price.match(/(\d+(\.\d+)?)/);
+  return match ? parseFloat(match[0]) : 0;
 }
 
 export function generateProductSlug(title: string): string {
@@ -68,7 +70,7 @@ export function debounce<T extends (...args: any[]) => void>(
   func: T,
   delay: number
 ): (...args: Parameters<T>) => void {
-  let timeoutId: NodeJS.Timeout
+  let timeoutId: number
   return (...args: Parameters<T>) => {
     clearTimeout(timeoutId)
     timeoutId = setTimeout(() => func(...args), delay)

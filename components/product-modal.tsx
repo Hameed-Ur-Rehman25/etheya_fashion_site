@@ -35,7 +35,7 @@ export function ProductModal({ product, isOpen, onClose }: ProductModalProps) {
   }
 
   const handleAddToCart = () => {
-    if (!selectedSize) {
+    if (product.sizes && product.sizes.length > 0 && !selectedSize) {
       alert('Please select a size')
       return
     }
