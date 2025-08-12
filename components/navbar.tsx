@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Search, ShoppingBag, User, Heart, Menu, X } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { Button } from '@/shared/components/ui/button'
 import { SearchModal } from './search-modal'
 import { CartDrawer } from './cart-drawer'
 
