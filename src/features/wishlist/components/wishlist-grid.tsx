@@ -1,11 +1,11 @@
 'use client'
 
 import { WishlistItem } from '../types/wishlist.types'
-import { ProductCard } from '@/features/products/components/product-card'
-import { Product } from '@/features/products/types/product.types'
-import { cn } from '@/shared/utils/cn'
+import { ProductCard } from '../../products/components/product-card'
+import { Product } from '../../products/types/product.types'
+import { cn } from '@/lib/utils'
 import { Heart, ShoppingBag } from 'lucide-react'
-import { Button } from '@/shared/components/ui/button'
+import { Button } from '@/components/ui/button'
 
 interface WishlistGridProps {
   items: WishlistItem[]

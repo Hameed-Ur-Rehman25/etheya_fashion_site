@@ -3,11 +3,11 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import { X, Heart, ChevronLeft, ChevronRight, ShoppingBag } from 'lucide-react'
-import { Button } from '@/shared/components/ui/button'
-import { Dialog, DialogContent } from '@/shared/components/ui/dialog'
-import { Badge } from '@/shared/components/ui/badge'
-import { Product } from '@/features/products/types/product.types'
-import { formatPrice } from '@/features/products/utils/product.utils'
+import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent } from '@/components/ui/dialog'
+import { Badge } from '@/components/ui/badge'
+import { Product } from '../types/product.types'
+import { formatPrice } from '../utils/product.utils'
 
 interface ProductModalProps {
   product: Product | null
@@ -95,7 +95,7 @@ export function ProductModal({
               {/* Image Indicators */}
               {product.images.length > 1 && (
                 <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
-                  {product.images.map((_, index) => (
+                  {product.images.map((_: string, index: number) => (
                     <button
                       key={index}
                       className={`w-2 h-2 rounded-full transition-colors ${
@@ -160,7 +160,7 @@ export function ProductModal({
                   Select Size
                 </h3>
                 <div className="flex flex-wrap gap-2">
-                  {product.sizes.map((size) => (
+                  {product.sizes.map((size: string) => (
                     <Button
                       key={size}
                       variant={selectedSize === size ? "default" : "outline"}
