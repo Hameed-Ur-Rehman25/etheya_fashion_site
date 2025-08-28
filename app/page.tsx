@@ -13,6 +13,7 @@ import { CategorySection } from '@/components/category-section'
 import { NewArrivalsCarousel } from '@/components/new-arrivals-carousel'
 import { SimpleProductGrid } from '@/components/simple-product-grid'
 import { SimpleProductCard } from '@/components/simple-product-card'
+import { ProductModal } from '@/components/product-modal'
 import { Spotlight } from "@/components/ui/spotlight"
 import { ReviewsSection } from '@/components/reviews-section'
 import { Product } from '@/types'
@@ -73,6 +74,7 @@ const TEST_PRODUCTS: Product[] = [
 
 export default function HomePage() {
   const [wishlistedIds, setWishlistedIds] = useState<Set<number>>(new Set())
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
 
   const handleAddToCart = (product: Product) => {
     console.log('Add to cart:', product.title)
@@ -90,6 +92,11 @@ export default function HomePage() {
       }
       return newSet
     })
+  }
+
+  const handleProductClick = (product: Product) => {
+    console.log('Opening product modal for:', product.title)
+    setSelectedProduct(product)
   }
   return (
     <div className="min-h-screen bg-white">
@@ -119,6 +126,7 @@ export default function HomePage() {
                 product={product}
                 onAddToCart={handleAddToCart}
                 onToggleWishlist={handleToggleWishlist}
+                onClick={handleProductClick}
                 isWishlisted={wishlistedIds.has(product.id)}
               />
             ))}
@@ -145,6 +153,7 @@ export default function HomePage() {
             columns={4}
             onAddToCart={handleAddToCart}
             onToggleWishlist={handleToggleWishlist}
+            onClick={handleProductClick}
             wishlistedIds={wishlistedIds}
           />
           <div className="text-center mt-12">
@@ -215,6 +224,13 @@ export default function HomePage() {
           </div>
         </div>
       </footer>
+
+      {/* Product Modal */}
+      <ProductModal
+        product={selectedProduct}
+        isOpen={!!selectedProduct}
+        onClose={() => setSelectedProduct(null)}
+      />
     </div>
   )
 }

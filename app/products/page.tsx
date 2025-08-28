@@ -5,6 +5,7 @@ import { Filter, LayoutGrid } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Navbar } from '@/components/navbar'
 import { SimpleProductGrid } from '@/components/simple-product-grid'
+import { ProductModal } from '@/components/product-modal'
 import { Footer } from '@/components/footer'
 import { SectionContainer } from '@/components/section-container'
 import { ProductFilterSidebar } from '@/components/product-filter-sidebar'
@@ -30,6 +31,7 @@ import { filterProducts, sortProducts } from '@/lib/product-utils'
 
 export default function ProductsPage() {
   const [wishlistedIds, setWishlistedIds] = useState<Set<number>>(new Set())
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
   const [viewMode] = useState<'simple'>('simple')
   const [isFilterOpen, setIsFilterOpen] = useState(false)
   
@@ -88,6 +90,11 @@ export default function ProductsPage() {
       }
       return newSet
     })
+  }
+
+  const handleProductClick = (product: Product) => {
+    console.log('Opening product modal for:', product.title)
+    setSelectedProduct(product)
   }
 
   return (
@@ -176,6 +183,7 @@ export default function ProductsPage() {
                 products={filteredAndSortedProducts}
                 onAddToCart={handleAddToCart}
                 onToggleWishlist={handleToggleWishlist}
+                onClick={handleProductClick}
                 wishlistedIds={wishlistedIds}
                 emptyStateMessage="No products match your current filters"
                 columns={4}
@@ -186,6 +194,13 @@ export default function ProductsPage() {
       </main>
 
       <Footer />
+
+      {/* Product Modal */}
+      <ProductModal
+        product={selectedProduct}
+        isOpen={!!selectedProduct}
+        onClose={() => setSelectedProduct(null)}
+      />
     </div>
   )
 }

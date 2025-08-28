@@ -11,6 +11,7 @@ interface SimpleProductCardProps {
   product: Product
   onAddToCart?: (product: Product) => void
   onToggleWishlist?: (product: Product) => void
+  onClick?: (product: Product) => void
   isWishlisted?: boolean
   className?: string
 }
@@ -19,6 +20,7 @@ export function SimpleProductCard({
   product,
   onAddToCart,
   onToggleWishlist,
+  onClick,
   isWishlisted = false,
   className
 }: SimpleProductCardProps) {
@@ -41,6 +43,11 @@ export function SimpleProductCard({
     onToggleWishlist?.(product)
   }
 
+  const handleCardClick = () => {
+    console.log('🔍 Card clicked:', product.title)
+    onClick?.(product)
+  }
+
   return (
     <div
       className={cn(
@@ -49,6 +56,7 @@ export function SimpleProductCard({
       )}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      onClick={handleCardClick}
     >
       {/* Image Section */}
       <div className="relative overflow-hidden bg-gray-50 w-60 h-96">

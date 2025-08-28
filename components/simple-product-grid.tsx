@@ -8,6 +8,7 @@ interface SimpleProductGridProps {
   products: Product[]
   onAddToCart?: (product: Product) => void
   onToggleWishlist?: (product: Product) => void
+  onClick?: (product: Product) => void
   wishlistedIds?: Set<number>
   className?: string
   emptyStateMessage?: string
@@ -19,6 +20,7 @@ export function SimpleProductGrid({
   products,
   onAddToCart,
   onToggleWishlist,
+  onClick,
   wishlistedIds = new Set(),
   className,
   emptyStateMessage = "No products found",
@@ -80,6 +82,7 @@ export function SimpleProductGrid({
           product={product}
           onAddToCart={onAddToCart}
           onToggleWishlist={onToggleWishlist}
+          onClick={onClick}
           isWishlisted={wishlistedIds.has(product.id)}
         />
       ))}
