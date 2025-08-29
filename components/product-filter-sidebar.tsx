@@ -50,7 +50,7 @@ export function ProductFilterSidebar({
       <div className="p-4 space-y-3">
         
         {/* Availability Filter */}
-        <CollapsibleFilter title="AVAILABILITY">
+  <CollapsibleFilter title="AVAILABILITY" isOpen={false}>
           {AVAILABILITY_OPTIONS.map((option) => (
             <FilterCheckbox
               key={option.value}
@@ -65,7 +65,7 @@ export function ProductFilterSidebar({
         </CollapsibleFilter>
 
         {/* Price Filter */}
-        <CollapsibleFilter title="PRICE">
+  <CollapsibleFilter title="PRICE" isOpen={false}>
           <PriceRangeFilter
             value={filters.priceRange}
             min={PRICE_RANGES.MIN}
@@ -76,7 +76,7 @@ export function ProductFilterSidebar({
         </CollapsibleFilter>
 
         {/* Type Filter */}
-        <CollapsibleFilter title="TYPE">
+  <CollapsibleFilter title="TYPE" isOpen={false}>
           {TYPE_OPTIONS.map((option) => (
             <FilterCheckbox
               key={option.value}
@@ -91,7 +91,7 @@ export function ProductFilterSidebar({
         </CollapsibleFilter>
 
         {/* Fabric Filter */}
-        <CollapsibleFilter title="FABRIC">
+  <CollapsibleFilter title="FABRIC" isOpen={false}>
           {FABRIC_OPTIONS.map((option) => (
             <FilterCheckbox
               key={option.value}
@@ -106,7 +106,7 @@ export function ProductFilterSidebar({
         </CollapsibleFilter>
 
         {/* Categories Filter */}
-        <CollapsibleFilter title="CATEGORIES">
+  <CollapsibleFilter title="CATEGORIES" isOpen={false}>
           {CATEGORIES.map((category) => (
             <FilterCheckbox
               key={category.id}
@@ -121,7 +121,7 @@ export function ProductFilterSidebar({
         </CollapsibleFilter>
 
         {/* Size Filter */}
-        <CollapsibleFilter title="SIZE">
+  <CollapsibleFilter title="SIZE" isOpen={false}>
           <div className="grid grid-cols-3 gap-1">
             {SIZES.map((size) => (
               <FilterCheckbox
@@ -138,7 +138,7 @@ export function ProductFilterSidebar({
         </CollapsibleFilter>
 
         {/* Pieces Filter */}
-        <CollapsibleFilter title="PIECES">
+  <CollapsibleFilter title="PIECES" isOpen={false}>
           {PIECES_OPTIONS.map((option) => (
             <FilterCheckbox
               key={option.value}

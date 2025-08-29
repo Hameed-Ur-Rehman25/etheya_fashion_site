@@ -94,22 +94,7 @@ export function NewArrivalsCarousel() {
                     <Heart className="w-5 h-5" />
                   </Button>
                   
-                  {/* Beautiful New Tag - Always Show */}
-                  <div className="absolute top-4 left-4 group z-30">
-                    <div className="relative">
-                      {/* Tag Shape */}
-                      <div className="bg-gradient-to-r from-red-500 to-pink-500 text-white px-4 py-2 text-sm font-semibold shadow-lg transform transition-all duration-300 group-hover:scale-105">
-                        NEW
-                        {/* Tag Arrow/Tail */}
-                        <div className="absolute top-0 right-[-8px] w-0 h-0 border-t-[16px] border-b-[16px] border-l-[8px] border-t-transparent border-b-transparent border-l-red-500"></div>
-                      </div>
-                      {/* Tag Shadow/Depth */}
-                      <div className="absolute top-1 left-1 bg-red-600 px-4 py-2 text-sm font-semibold -z-10">
-                        NEW
-                        <div className="absolute top-0 right-[-8px] w-0 h-0 border-t-[16px] border-b-[16px] border-l-[8px] border-t-transparent border-b-transparent border-l-red-600"></div>
-                      </div>
-                    </div>
-                  </div>
+                  {/* ...removed NEW tag... */}
                 </div>
               </div>
               

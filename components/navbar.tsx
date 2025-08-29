@@ -56,9 +56,19 @@ export function Navbar() {
                 <Link href="/about" className="text-gray-700 hover:text-gray-900 transition-colors font-happy-monkey text-base">
                   About
                 </Link>
-                <Link href="/contact" className="text-gray-700 hover:text-gray-900 transition-colors font-happy-monkey text-base">
+                <a
+                  href="#footer"
+                  className="text-gray-700 hover:text-gray-900 transition-colors font-happy-monkey text-base"
+                  onClick={e => {
+                    e.preventDefault();
+                    const footer = document.getElementById('footer');
+                    if (footer) {
+                      footer.scrollIntoView({ behavior: 'smooth' });
+                    }
+                  }}
+                >
                   Contact
-                </Link>
+                </a>
               </div>
             </div>
 

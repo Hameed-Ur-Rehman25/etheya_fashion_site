@@ -148,14 +148,18 @@ export default function HomePage() {
               Discover our complete collection of premium fashion pieces
             </p>
           </div>
-          <SimpleProductGrid
-            products={TEST_PRODUCTS}
-            columns={4}
-            onAddToCart={handleAddToCart}
-            onToggleWishlist={handleToggleWishlist}
-            onClick={handleProductClick}
-            wishlistedIds={wishlistedIds}
-          />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {Array(12).fill(null).map((_, i) => (
+              <SimpleProductCard
+                key={TEST_PRODUCTS[i % TEST_PRODUCTS.length].id + '-' + i}
+                product={TEST_PRODUCTS[i % TEST_PRODUCTS.length]}
+                onAddToCart={handleAddToCart}
+                onToggleWishlist={handleToggleWishlist}
+                onClick={handleProductClick}
+                isWishlisted={wishlistedIds.has(TEST_PRODUCTS[i % TEST_PRODUCTS.length].id)}
+              />
+            ))}
+          </div>
           <div className="text-center mt-12">
             <Link href="/products">
               <Button className="bg-black text-white hover:bg-gray-800 px-8 py-3">
@@ -167,7 +171,7 @@ export default function HomePage() {
       </section>
 
       {/* Footer */}
-      <footer className="relative bg-black/[0.96] text-white py-16 overflow-hidden">
+  <footer id="footer" className="relative bg-black/[0.96] text-white py-16 overflow-hidden">
         {/* Grid pattern background */}
         <div className="pointer-events-none absolute inset-0 [background-size:40px_40px] select-none [background-image:linear-gradient(to_right,#171717_1px,transparent_1px),linear-gradient(to_bottom,#171717_1px,transparent_1px)]" />
         
