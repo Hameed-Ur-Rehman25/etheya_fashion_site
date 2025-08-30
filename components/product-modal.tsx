@@ -97,12 +97,6 @@ export function ProductModal({ product, isOpen, onClose }: ProductModalProps) {
           
           {/* Right Side - Product Details */}
           <div className="p-6 lg:p-8">
-            {/* Category Badge */}
-            {product.category && (
-              <Badge variant="secondary" className="mb-3 text-xs tracking-wider uppercase">
-                {product.category}
-              </Badge>
-            )}
             
             {/* Product Title */}
             <h1 className="text-2xl lg:text-3xl font-light text-gray-900 mb-2 tracking-wide">
