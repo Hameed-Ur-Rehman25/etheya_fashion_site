@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useWishlist } from '@/context/WishlistContext'
 import Image from 'next/image'
 import { X, Heart, Plus, Minus, ShoppingBag, ChevronDown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -16,40 +17,42 @@ interface ProductModalProps {
   onClose: () => void
 }
 
+
 export function ProductModal({ product, isOpen, onClose }: ProductModalProps) {
   const [selectedSize, setSelectedSize] = useState('')
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
-  const [isWishlisted, setIsWishlisted] = useState(false)
   const [quantity, setQuantity] = useState(1)
   const [openSections, setOpenSections] = useState<string[]>([])
 
-  if (!product) return null
+  const { isWishlisted, toggleWishlist } = useWishlist();
+
+  if (!product) return null;
 
   const toggleSection = (section: string) => {
     setOpenSections(prev => 
       prev.includes(section) 
         ? prev.filter(s => s !== section)
         : [...prev, section]
-    )
+    );
   }
 
-  const increaseQuantity = () => setQuantity(prev => prev + 1)
-  const decreaseQuantity = () => setQuantity(prev => Math.max(1, prev - 1))
+  const increaseQuantity = () => setQuantity(prev => prev + 1);
+  const decreaseQuantity = () => setQuantity(prev => Math.max(1, prev - 1));
 
   const handleAddToCart = () => {
     if (!selectedSize) {
-      alert('Please select a size')
-      return
+      alert('Please select a size');
+      return;
     }
-    console.log('Adding to cart:', { product, selectedSize, quantity })
+    console.log('Adding to cart:', { product, selectedSize, quantity });
   }
 
   const handleBuyNow = () => {
     if (!selectedSize) {
-      alert('Please select a size')
-      return
+      alert('Please select a size');
+      return;
     }
-    console.log('Buy now:', { product, selectedSize, quantity })
+    console.log('Buy now:', { product, selectedSize, quantity });
   }
 
   return (
@@ -172,12 +175,12 @@ export function ProductModal({ product, isOpen, onClose }: ProductModalProps) {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => setIsWishlisted(!isWishlisted)}
+                onClick={() => product && toggleWishlist(product)}
                 className="text-gray-600 hover:text-black"
               >
                 <Heart
                   className={`w-4 h-4 mr-2 ${
-                    isWishlisted ? 'fill-red-500 text-red-500' : ''
+                    product && isWishlisted(product.id) ? 'fill-red-500 text-red-500' : ''
                   }`}
                 />
                 Add to Wishlist
