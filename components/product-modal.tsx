@@ -68,15 +68,6 @@ export function ProductModal({ product, isOpen, onClose }: ProductModalProps) {
                 className="object-cover"
               />
               
-              {/* Close Button */}
-              <Button
-                variant="outline"
-                size="icon"
-                className="absolute top-4 right-4 bg-white/90 hover:bg-white shadow-lg z-10"
-                onClick={onClose}
-              >
-                <X className="w-4 h-4" />
-              </Button>
             </div>
             
             {/* Thumbnail Navigation */}
