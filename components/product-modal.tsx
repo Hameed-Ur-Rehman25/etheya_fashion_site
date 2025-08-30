@@ -4,7 +4,7 @@ import { useState } from 'react'
 import Image from 'next/image'
 import { X, Heart, Plus, Minus, ShoppingBag, ChevronDown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
 import { Badge } from '@/components/ui/badge'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { Product } from '@/types'
@@ -55,6 +55,7 @@ export function ProductModal({ product, isOpen, onClose }: ProductModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-5xl max-h-[95vh] overflow-y-auto p-0">
+        <DialogTitle className="sr-only">{product.title}</DialogTitle>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
           {/* Left Side - Image Section */}
           <div className="relative bg-gray-50">

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useWishlist } from '../context/WishlistContext'
 import Image from 'next/image'
 import { Heart, Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -19,12 +20,11 @@ interface SimpleProductCardProps {
 export function SimpleProductCard({
   product,
   onAddToCart,
-  onToggleWishlist,
   onClick,
-  isWishlisted = false,
   className
 }: SimpleProductCardProps) {
   const [isHovered, setIsHovered] = useState(false)
+  const { toggleWishlist, isWishlisted } = useWishlist();
   
   // Use the second image for hover effect, fallback to first image if no second image
   const hoverImage = product.images && product.images.length > 1 
@@ -37,10 +37,10 @@ export function SimpleProductCard({
     onAddToCart?.(product)
   }
 
+
   const handleToggleWishlist = (e: React.MouseEvent) => {
-    e.stopPropagation()
-    console.log('❤️ Toggling wishlist:', product.title)
-    onToggleWishlist?.(product)
+    e.stopPropagation();
+    toggleWishlist(product);
   }
 
   const handleCardClick = () => {
@@ -73,21 +73,19 @@ export function SimpleProductCard({
           "absolute top-3 right-3 transition-all duration-300",
           isHovered ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"
         )}>
-          {onToggleWishlist && (
-            <Button
-              size="icon"
-              variant="ghost"
-              className="w-8 h-8 bg-white/90 backdrop-blur-sm hover:bg-white shadow-md rounded-full"
-              onClick={handleToggleWishlist}
-            >
-              <Heart
-                className={cn(
-                  "w-4 h-4 transition-colors",
-                  isWishlisted ? "fill-red-500 text-red-500" : "text-gray-600 hover:text-red-500"
-                )}
-              />
-            </Button>
-          )}
+          <Button
+            size="icon"
+            variant="ghost"
+            className="w-8 h-8 bg-white/90 backdrop-blur-sm hover:bg-white shadow-md rounded-full"
+            onClick={handleToggleWishlist}
+          >
+            <Heart
+              className={cn(
+                "w-4 h-4 transition-colors",
+                isWishlisted(product.id) ? "fill-red-500 text-red-500" : "text-gray-600 hover:text-red-500"
+              )}
+            />
+          </Button>
         </div>
 
         {/* Add to Cart Icon - positioned at bottom-right within image */}

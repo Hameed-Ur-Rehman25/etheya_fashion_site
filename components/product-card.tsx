@@ -4,6 +4,7 @@ import Image from 'next/image'
 import { Heart, ShoppingBag } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Product, ViewMode } from '@/types'
+import { useWishlist } from '../context/WishlistContext'
 import { formatPrice, truncateText } from '@/lib/product-utils'
 import { cn } from '@/lib/utils'
 
@@ -22,11 +23,10 @@ export function ProductCard({
   viewMode = 'grid',
   onQuickView,
   onAddToCart,
-  onToggleWishlist,
-  isWishlisted = false,
   className
 }: ProductCardProps) {
   const isListView = viewMode === 'list'
+  const { toggleWishlist, isWishlisted } = useWishlist();
 
   return (
     <div
@@ -72,24 +72,22 @@ export function ProductCard({
         </div>
 
         {/* Wishlist Button */}
-        {onToggleWishlist && (
-          <Button
-            size="icon"
-            variant="ghost"
-            className="absolute top-2 right-2 bg-white/80 hover:bg-white"
-            onClick={(e) => {
-              e.stopPropagation()
-              onToggleWishlist(product)
-            }}
-          >
-            <Heart
-              className={cn(
-                "w-4 h-4",
-                isWishlisted ? "fill-red-500 text-red-500" : "text-gray-600"
-              )}
-            />
-          </Button>
-        )}
+        <Button
+          size="icon"
+          variant="ghost"
+          className="absolute top-2 right-2 bg-white/80 hover:bg-white"
+          onClick={(e) => {
+            e.stopPropagation();
+            toggleWishlist(product);
+          }}
+        >
+          <Heart
+            className={cn(
+              "w-4 h-4",
+              isWishlisted(product.id) ? "fill-red-500 text-red-500" : "text-gray-600"
+            )}
+          />
+        </Button>
 
         {/* Stock Status */}
         {!product.inStock && (

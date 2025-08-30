@@ -30,11 +30,9 @@ import { Product, SearchFilters } from '@/types'
 import { filterProducts, sortProducts } from '@/lib/product-utils'
 
 export default function ProductsPage() {
-  const [wishlistedIds, setWishlistedIds] = useState<Set<number>>(new Set())
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
   const [viewMode] = useState<'simple'>('simple')
   const [isFilterOpen, setIsFilterOpen] = useState(false)
-  
   const [filters, setFilters] = useState<SearchFilters>({
     categories: [],
     sizes: [],
@@ -80,17 +78,7 @@ export default function ProductsPage() {
     console.log('Add to cart:', product)
   }
 
-  const handleToggleWishlist = (product: Product) => {
-    setWishlistedIds(prev => {
-      const newSet = new Set(prev)
-      if (newSet.has(product.id)) {
-        newSet.delete(product.id)
-      } else {
-        newSet.add(product.id)
-      }
-      return newSet
-    })
-  }
+
 
   const handleProductClick = (product: Product) => {
     console.log('Opening product modal for:', product.title)
@@ -182,9 +170,7 @@ export default function ProductsPage() {
               <SimpleProductGrid
                 products={filteredAndSortedProducts}
                 onAddToCart={handleAddToCart}
-                onToggleWishlist={handleToggleWishlist}
                 onClick={handleProductClick}
-                wishlistedIds={wishlistedIds}
                 emptyStateMessage="No products match your current filters"
                 columns={4}
               />

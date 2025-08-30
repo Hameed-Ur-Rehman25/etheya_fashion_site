@@ -19,9 +19,7 @@ interface SimpleProductGridProps {
 export function SimpleProductGrid({
   products,
   onAddToCart,
-  onToggleWishlist,
   onClick,
-  wishlistedIds = new Set(),
   className,
   emptyStateMessage = "No products found",
   loading = false,
@@ -81,9 +79,7 @@ export function SimpleProductGrid({
           key={product.id}
           product={product}
           onAddToCart={onAddToCart}
-          onToggleWishlist={onToggleWishlist}
           onClick={onClick}
-          isWishlisted={wishlistedIds.has(product.id)}
         />
       ))}
     </div>
