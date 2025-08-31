@@ -1,6 +1,8 @@
 'use client'
 
 import { useState } from 'react'
+import { toast } from '@/hooks/use-toast'
+import { useCartContext } from '@/context/CartContext'
 import { useWishlist } from '@/context/WishlistContext'
 import Image from 'next/image'
 import { X, Heart, Plus, Minus, ShoppingBag, ChevronDown } from 'lucide-react'
@@ -25,6 +27,7 @@ export function ProductModal({ product, isOpen, onClose }: ProductModalProps) {
   const [openSections, setOpenSections] = useState<string[]>([])
 
   const { isWishlisted, toggleWishlist } = useWishlist();
+  const { addToCart } = useCartContext();
 
   if (!product) return null;
 
@@ -44,7 +47,12 @@ export function ProductModal({ product, isOpen, onClose }: ProductModalProps) {
       alert('Please select a size');
       return;
     }
-    console.log('Adding to cart:', { product, selectedSize, quantity });
+    addToCart(product, quantity, selectedSize);
+    toast({
+      title: 'Added to Cart',
+      description: `${product.title} (${selectedSize}) x${quantity} added to your cart.`,
+      variant: 'default',
+    });
   }
 
   const handleBuyNow = () => {

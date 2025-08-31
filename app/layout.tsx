@@ -4,6 +4,7 @@ import { Inter, Playfair_Display, Happy_Monkey } from 'next/font/google'
 import './globals.css'
 import { WishlistProvider } from '../context/WishlistContext'
 import { CartProvider } from '../context/CartContext'
+import { Toaster } from '@/components/ui/toaster'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 const playfair = Playfair_Display({ subsets: ['latin'], variable: '--font-playfair' })
@@ -30,6 +31,7 @@ export default function RootLayout({
         <WishlistProvider>
           <CartProvider>
             {children}
+            <Toaster />
           </CartProvider>
         </WishlistProvider>
       </body>

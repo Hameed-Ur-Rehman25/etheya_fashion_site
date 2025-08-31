@@ -1,15 +1,12 @@
 "use client";
 import React, { createContext, useContext, useState, ReactNode } from "react";
-import { Product } from "@/types";
+import { Product, CartItem } from "@/types";
 
-interface CartItem {
-  product: Product;
-  quantity: number;
-}
+// CartItem now imported from types
 
 interface CartContextType {
   cart: CartItem[];
-  addToCart: (product: Product, quantity?: number) => void;
+  addToCart: (product: Product, quantity?: number, selectedSize?: string) => void;
   clearCart: () => void;
 }
 
@@ -18,17 +15,32 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [cart, setCart] = useState<CartItem[]>([]);
 
-  const addToCart = (product: Product, quantity: number = 1) => {
+  const addToCart = (product: Product, quantity: number = 1, selectedSize?: string) => {
     setCart((prev) => {
-      const existing = prev.find((item) => item.product.id === product.id);
+      const existing = prev.find((item) => item.product.id === product.id && item.selectedSize === selectedSize);
       if (existing) {
         return prev.map((item) =>
-          item.product.id === product.id
+          item.product.id === product.id && item.selectedSize === selectedSize
             ? { ...item, quantity: item.quantity + quantity }
             : item
         );
       } else {
-        return [...prev, { product, quantity }];
+        // Parse price robustly: handle formatted strings like "Rs. 7,560"
+        let numericPrice = 0;
+        if (typeof product.price === 'string') {
+          numericPrice = parseInt(product.price.replace(/[^\d]/g, ''));
+        } else {
+          numericPrice = product.price;
+        }
+        return [
+          ...prev,
+          {
+            product,
+            quantity,
+            selectedSize,
+            price: numericPrice,
+          },
+        ];
       }
     });
   };

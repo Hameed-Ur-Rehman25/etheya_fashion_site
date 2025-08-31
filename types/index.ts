@@ -19,9 +19,11 @@ export interface Category {
   slug?: string
 }
 
-export interface CartItem extends Product {
-  quantity: number
-  selectedSize?: string
+export interface CartItem {
+  product: Product;
+  quantity: number;
+  selectedSize?: string;
+  price: number; // always a number for calculations
 }
 
 export interface User {
