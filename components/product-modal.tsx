@@ -64,17 +64,9 @@ export function ProductModal({ product, isOpen, onClose }: ProductModalProps) {
       alert('Please select a size');
       return;
     }
-    
-    // Set the buy now item (this will clear any previous buy now items)
     setBuyNowItem(product, quantity, selectedSize);
-    
-    // Close the modal
     onClose();
-    
-    // Navigate to delivery details page
     router.push('/delivery-details');
-    
-    // Show success toast
     toast({
       title: 'Proceeding to Quick Checkout',
       description: `${product.title} (${selectedSize}) x${quantity} - proceeding to immediate purchase.`,

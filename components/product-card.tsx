@@ -34,12 +34,8 @@ export function ProductCard({
 
   const handleBuyNow = (e: React.MouseEvent) => {
     e.stopPropagation();
-    
-    // Set the buy now item with default size and quantity
     const defaultSize = product.sizes[0];
     setBuyNowItem(product, 1, defaultSize);
-    
-    // Navigate to delivery details page
     router.push('/delivery-details');
   };
 

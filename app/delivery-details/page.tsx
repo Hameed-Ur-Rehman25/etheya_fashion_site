@@ -1,6 +1,6 @@
 'use client'
 
-import React from "react";
+import React, { useState } from "react";
 import { useCartContext } from "@/context/CartContext";
 import { useBuyNow } from "@/context/BuyNowContext";
 import Image from "next/image";
@@ -12,11 +12,29 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useRouter } from "next/navigation";
+import { AlertCircle } from "lucide-react";
 
 export default function DeliveryDetailsPage() {
-  const { cart, clearCart } = useCartContext();
-  const { buyNowItem, isBuyNowMode, clearBuyNowItem } = useBuyNow();
+  const { cart } = useCartContext();
+  const { buyNowOrder, isBuyNowMode, setDeliveryDetails, getOrderSummary } = useBuyNow();
   const router = useRouter();
+
+  // Form state
+  const [formData, setFormData] = useState({
+    email: '',
+    firstName: '',
+    lastName: '',
+    country: '',
+    address: '',
+    city: '',
+    phone: '',
+    apartment: '',
+    postalCode: ''
+  });
+
+  // Form validation state
+  const [errors, setErrors] = useState<{[key: string]: string}>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Determine which items to show and calculate totals
   let items: CartItem[] = [];
@@ -26,34 +44,114 @@ export default function DeliveryDetailsPage() {
   let pageTitle = "Checkout";
   let pageDescription = "Complete your order with delivery details";
 
-  if (isBuyNowMode && buyNowItem) {
+  if (isBuyNowMode && buyNowOrder) {
     // Buy Now Mode - show only the buy now item
     items = [{
-      product: buyNowItem.product,
-      quantity: buyNowItem.quantity,
-      selectedSize: buyNowItem.selectedSize,
-      price: buyNowItem.price
+      product: buyNowOrder.item.product,
+      quantity: buyNowOrder.item.quantity,
+      selectedSize: buyNowOrder.item.selectedSize,
+      price: buyNowOrder.item.price
     }];
-    subtotal = buyNowItem.price * buyNowItem.quantity;
+    
+    const orderSummary = getOrderSummary();
+    if (orderSummary) {
+      subtotal = orderSummary.subtotal;
+      shipping = orderSummary.shipping;
+      total = orderSummary.total;
+    }
+    
     pageTitle = "Quick Checkout";
     pageDescription = "Complete your immediate purchase";
   } else {
     // Regular Cart Mode - show all cart items
     items = cart;
     subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    shipping = items.length > 0 ? 100 : 0;
+    total = subtotal + shipping;
   }
 
-  shipping = items.length > 0 ? 100 : 0;
-  total = subtotal + shipping;
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+    // Clear error when user starts typing
+    if (errors[field]) {
+      setErrors(prev => ({ ...prev, [field]: '' }));
+    }
+  };
+
+  const validateForm = () => {
+    const newErrors: {[key: string]: string} = {};
+
+    // Required field validation
+    if (!formData.email.trim()) {
+      newErrors.email = 'Email is required';
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = 'Please enter a valid email address';
+    }
+
+    if (!formData.firstName.trim()) {
+      newErrors.firstName = 'First name is required';
+    }
+
+    if (!formData.lastName.trim()) {
+      newErrors.lastName = 'Last name is required';
+    }
+
+    if (!formData.country) {
+      newErrors.country = 'Please select a country';
+    }
+
+    if (!formData.address.trim()) {
+      newErrors.address = 'Address is required';
+    }
+
+    if (!formData.city.trim()) {
+      newErrors.city = 'City is required';
+    }
+
+    if (!formData.phone.trim()) {
+      newErrors.phone = 'Phone number is required';
+    } else if (!/^[\+]?[0-9\s\-\(\)]{10,}$/.test(formData.phone)) {
+      newErrors.phone = 'Please enter a valid phone number';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleProceedToPayment = () => {
-    // Clear buy now item if in buy now mode
-    if (isBuyNowMode) {
-      clearBuyNowItem();
+    if (!validateForm()) {
+      return;
+    }
+
+    setIsSubmitting(true);
+    
+    // Store delivery details in buy now order if in buy now mode
+    if (isBuyNowMode && buyNowOrder) {
+      setDeliveryDetails({
+        email: formData.email,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        country: formData.country,
+        address: formData.address,
+        city: formData.city,
+        phone: formData.phone,
+        apartment: formData.apartment,
+        postalCode: formData.postalCode
+      });
     }
     
-    // Navigate to payment page
-    router.push('/payment');
+    // Simulate form submission
+    setTimeout(() => {
+      setIsSubmitting(false);
+      
+      // Navigate to payment page
+      router.push('/payment');
+    }, 1000);
+  };
+
+  const isFormValid = () => {
+    return formData.email && formData.firstName && formData.lastName && 
+           formData.country && formData.address && formData.city && formData.phone;
   };
 
   return (
@@ -79,17 +177,25 @@ export default function DeliveryDetailsPage() {
             {/* Left: Delivery Form */}
             <div className="lg:col-span-2 bg-white p-8 rounded-lg shadow-sm border">
               <h2 className="text-2xl font-bold mb-6 text-gray-900">Contact Information</h2>
-              <form className="space-y-6">
+              <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
                 <div>
                   <Label htmlFor="email" className="text-sm font-medium text-gray-700">
-                    Email or mobile phone number
+                    Email or mobile phone number <span className="text-red-500">*</span>
                   </Label>
                   <Input
                     id="email"
                     type="email"
+                    value={formData.email}
+                    onChange={(e) => handleInputChange('email', e.target.value)}
+                    className={`mt-1 ${errors.email ? 'border-red-500 focus:ring-red-500' : ''}`}
                     placeholder="Enter your email or phone"
-                    className="mt-1"
                   />
+                  {errors.email && (
+                    <div className="flex items-center mt-1 text-red-500 text-sm">
+                      <AlertCircle className="w-4 h-4 mr-1" />
+                      {errors.email}
+                    </div>
+                  )}
                 </div>
                 
                 <div className="flex items-center space-x-2">
@@ -103,10 +209,10 @@ export default function DeliveryDetailsPage() {
                 
                 <div>
                   <Label htmlFor="country" className="text-sm font-medium text-gray-700">
-                    Country
+                    Country <span className="text-red-500">*</span>
                   </Label>
-                  <Select>
-                    <SelectTrigger className="mt-1">
+                  <Select value={formData.country} onValueChange={(value) => handleInputChange('country', value)}>
+                    <SelectTrigger className={`mt-1 ${errors.country ? 'border-red-500 focus:ring-red-500' : ''}`}>
                       <SelectValue placeholder="Select country" />
                     </SelectTrigger>
                     <SelectContent>
@@ -116,43 +222,73 @@ export default function DeliveryDetailsPage() {
                       <SelectItem value="sri-lanka">Sri Lanka</SelectItem>
                     </SelectContent>
                   </Select>
+                  {errors.country && (
+                    <div className="flex items-center mt-1 text-red-500 text-sm">
+                      <AlertCircle className="w-4 h-4 mr-1" />
+                      {errors.country}
+                    </div>
+                  )}
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="firstName" className="text-sm font-medium text-gray-700">
-                      First name
+                      First name <span className="text-red-500">*</span>
                     </Label>
                     <Input
                       id="firstName"
                       type="text"
+                      value={formData.firstName}
+                      onChange={(e) => handleInputChange('firstName', e.target.value)}
+                      className={`mt-1 ${errors.firstName ? 'border-red-500 focus:ring-red-500' : ''}`}
                       placeholder="First name"
-                      className="mt-1"
                     />
+                    {errors.firstName && (
+                      <div className="flex items-center mt-1 text-red-500 text-sm">
+                        <AlertCircle className="w-4 h-4 mr-1" />
+                        {errors.firstName}
+                      </div>
+                    )}
                   </div>
                   <div>
                     <Label htmlFor="lastName" className="text-sm font-medium text-gray-700">
-                      Last name
+                      Last name <span className="text-red-500">*</span>
                     </Label>
                     <Input
                       id="lastName"
                       type="text"
+                      value={formData.lastName}
+                      onChange={(e) => handleInputChange('lastName', e.target.value)}
+                      className={`mt-1 ${errors.lastName ? 'border-red-500 focus:ring-red-500' : ''}`}
                       placeholder="Last name"
-                      className="mt-1"
                     />
+                    {errors.lastName && (
+                      <div className="flex items-center mt-1 text-red-500 text-sm">
+                        <AlertCircle className="w-4 h-4 mr-1" />
+                        {errors.lastName}
+                      </div>
+                    )}
                   </div>
                 </div>
                 
                 <div>
                   <Label htmlFor="address" className="text-sm font-medium text-gray-700">
-                    Address
+                    Address <span className="text-red-500">*</span>
                   </Label>
                   <Input
                     id="address"
                     type="text"
+                    value={formData.address}
+                    onChange={(e) => handleInputChange('address', e.target.value)}
+                    className={`mt-1 ${errors.address ? 'border-red-500 focus:ring-red-500' : ''}`}
                     placeholder="Street address"
-                    className="mt-1"
                   />
+                  {errors.address && (
+                    <div className="flex items-center mt-1 text-red-500 text-sm">
+                      <AlertCircle className="w-4 h-4 mr-1" />
+                      {errors.address}
+                    </div>
+                    )}
                 </div>
                 
                 <div>
@@ -162,6 +298,8 @@ export default function DeliveryDetailsPage() {
                   <Input
                     id="apartment"
                     type="text"
+                    value={formData.apartment}
+                    onChange={(e) => handleInputChange('apartment', e.target.value)}
                     placeholder="Apartment, suite, etc."
                     className="mt-1"
                   />
@@ -170,14 +308,22 @@ export default function DeliveryDetailsPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="city" className="text-sm font-medium text-gray-700">
-                      City
+                      City <span className="text-red-500">*</span>
                     </Label>
                     <Input
                       id="city"
                       type="text"
+                      value={formData.city}
+                      onChange={(e) => handleInputChange('city', e.target.value)}
+                      className={`mt-1 ${errors.city ? 'border-red-500 focus:ring-red-500' : ''}`}
                       placeholder="City"
-                      className="mt-1"
                     />
+                    {errors.city && (
+                      <div className="flex items-center mt-1 text-red-500 text-sm">
+                        <AlertCircle className="w-4 h-4 mr-1" />
+                        {errors.city}
+                      </div>
+                    )}
                   </div>
                   <div>
                     <Label htmlFor="postalCode" className="text-sm font-medium text-gray-700">
@@ -186,6 +332,8 @@ export default function DeliveryDetailsPage() {
                     <Input
                       id="postalCode"
                       type="text"
+                      value={formData.postalCode}
+                      onChange={(e) => handleInputChange('postalCode', e.target.value)}
                       placeholder="Postal code"
                       className="mt-1"
                     />
@@ -194,14 +342,22 @@ export default function DeliveryDetailsPage() {
                 
                 <div>
                   <Label htmlFor="phone" className="text-sm font-medium text-gray-700">
-                    Phone
+                    Phone <span className="text-red-500">*</span>
                   </Label>
                   <Input
                     id="phone"
                     type="tel"
+                    value={formData.phone}
+                    onChange={(e) => handleInputChange('phone', e.target.value)}
+                    className={`mt-1 ${errors.phone ? 'border-red-500 focus:ring-red-500' : ''}`}
                     placeholder="Phone number"
-                    className="mt-1"
                   />
+                  {errors.phone && (
+                    <div className="flex items-center mt-1 text-red-500 text-sm">
+                      <AlertCircle className="w-4 h-4 mr-1" />
+                      {errors.phone}
+                    </div>
+                  )}
                 </div>
                 
                 <div className="flex items-center space-x-2">
@@ -221,9 +377,17 @@ export default function DeliveryDetailsPage() {
                   type="button"
                   size="lg"
                   onClick={handleProceedToPayment}
-                  className="w-full mt-8 bg-gray-900 text-white hover:bg-gray-800 py-3 text-lg font-medium transition-colors"
+                  disabled={!isFormValid() || isSubmitting}
+                  className="w-full mt-8 bg-gray-900 text-white hover:bg-gray-800 py-3 text-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Proceed to Payment
+                  {isSubmitting ? (
+                    <div className="flex items-center space-x-2">
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      <span>Processing...</span>
+                    </div>
+                  ) : (
+                    <span>Proceed to Payment</span>
+                  )}
                 </Button>
               </form>
             </div>

@@ -9,20 +9,40 @@ interface BuyNowItem {
   price: number;
 }
 
+interface DeliveryDetails {
+  email: string;
+  firstName: string;
+  lastName: string;
+  country: string;
+  address: string;
+  city: string;
+  phone: string;
+  apartment?: string;
+  postalCode?: string;
+}
+
+interface BuyNowOrder {
+  item: BuyNowItem;
+  deliveryDetails: DeliveryDetails | null;
+  orderId?: string;
+  timestamp: Date;
+}
+
 interface BuyNowContextType {
-  buyNowItem: BuyNowItem | null;
+  buyNowOrder: BuyNowOrder | null;
   setBuyNowItem: (product: Product, quantity: number, selectedSize: string) => void;
-  clearBuyNowItem: () => void;
+  setDeliveryDetails: (details: DeliveryDetails) => void;
+  clearBuyNowOrder: () => void;
   isBuyNowMode: boolean;
+  getOrderSummary: () => { subtotal: number; shipping: number; total: number } | null;
 }
 
 const BuyNowContext = createContext<BuyNowContextType | undefined>(undefined);
 
 export const BuyNowProvider = ({ children }: { children: ReactNode }) => {
-  const [buyNowItem, setBuyNowItemState] = useState<BuyNowItem | null>(null);
+  const [buyNowOrder, setBuyNowOrderState] = useState<BuyNowOrder | null>(null);
 
   const setBuyNowItem = (product: Product, quantity: number, selectedSize: string) => {
-    // Parse price robustly: handle formatted strings like "Rs. 7,560"
     let numericPrice = 0;
     if (typeof product.price === 'string') {
       numericPrice = parseInt(product.price.replace(/[^\d]/g, ''));
@@ -37,21 +57,48 @@ export const BuyNowProvider = ({ children }: { children: ReactNode }) => {
       price: numericPrice,
     };
 
-    setBuyNowItemState(newBuyNowItem);
+    const newOrder: BuyNowOrder = {
+      item: newBuyNowItem,
+      deliveryDetails: null,
+      timestamp: new Date(),
+    };
+
+    setBuyNowOrderState(newOrder);
   };
 
-  const clearBuyNowItem = () => {
-    setBuyNowItemState(null);
+  const setDeliveryDetails = (details: DeliveryDetails) => {
+    if (buyNowOrder) {
+      setBuyNowOrderState({
+        ...buyNowOrder,
+        deliveryDetails: details,
+      });
+    }
   };
 
-  const isBuyNowMode = buyNowItem !== null;
+  const clearBuyNowOrder = () => {
+    setBuyNowOrderState(null);
+  };
+
+  const isBuyNowMode = buyNowOrder !== null;
+
+  const getOrderSummary = () => {
+    if (!buyNowOrder) return null;
+    
+    const subtotal = buyNowOrder.item.price * buyNowOrder.item.quantity;
+    const shipping = 100; // Fixed shipping cost
+    const total = subtotal + shipping;
+    
+    return { subtotal, shipping, total };
+  };
 
   return (
-    <BuyNowContext.Provider value={{ 
-      buyNowItem, 
-      setBuyNowItem, 
-      clearBuyNowItem, 
-      isBuyNowMode 
+    <BuyNowContext.Provider value={{
+      buyNowOrder,
+      setBuyNowItem,
+      setDeliveryDetails,
+      clearBuyNowOrder,
+      isBuyNowMode,
+      getOrderSummary
     }}>
       {children}
     </BuyNowContext.Provider>

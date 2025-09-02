@@ -13,13 +13,15 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Upload, CreditCard, Banknote, Wallet, FileText, CheckCircle } from "lucide-react";
+import { SuccessPopup } from "@/components/SuccessPopup";
 
 export default function PaymentPage() {
   const { cart, clearCart } = useCartContext();
-  const { buyNowItem, isBuyNowMode, clearBuyNowItem } = useBuyNow();
+  const { buyNowOrder, isBuyNowMode, clearBuyNowOrder, getOrderSummary } = useBuyNow();
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>('');
   const [proofOfPayment, setProofOfPayment] = useState<File | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
   // Determine which items to show and calculate totals
   let items: CartItem[] = [];
@@ -29,25 +31,31 @@ export default function PaymentPage() {
   let pageTitle = "Payment";
   let pageDescription = "Complete your payment to finalize your order";
 
-  if (isBuyNowMode && buyNowItem) {
+  if (isBuyNowMode && buyNowOrder) {
     // Buy Now Mode - show only the buy now item
     items = [{
-      product: buyNowItem.product,
-      quantity: buyNowItem.quantity,
-      selectedSize: buyNowItem.selectedSize,
-      price: buyNowItem.price
+      product: buyNowOrder.item.product,
+      quantity: buyNowOrder.item.quantity,
+      selectedSize: buyNowOrder.item.selectedSize,
+      price: buyNowOrder.item.price
     }];
-    subtotal = buyNowItem.price * buyNowItem.quantity;
+    
+    const orderSummary = getOrderSummary();
+    if (orderSummary) {
+      subtotal = orderSummary.subtotal;
+      shipping = orderSummary.shipping;
+      total = orderSummary.total;
+    }
+    
     pageTitle = "Quick Payment";
     pageDescription = "Complete your immediate purchase payment";
   } else {
     // Regular Cart Mode - show all cart items
     items = cart;
     subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    shipping = items.length > 0 ? 100 : 0;
+    total = subtotal + shipping;
   }
-
-  shipping = items.length > 0 ? 100 : 0;
-  total = subtotal + shipping;
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -73,16 +81,14 @@ export default function PaymentPage() {
       // Simulate payment processing
       await new Promise(resolve => setTimeout(resolve, 2000));
       
-      // Clear buy now item if in buy now mode
-      if (isBuyNowMode) {
-        clearBuyNowItem();
-      }
+      // Don't clear buy now item here - keep it for the success popup
+      // It will be cleared when the success popup is closed
       
       // TODO: Implement actual payment logic
       console.log('Payment processed successfully');
       
-      // Show success message or redirect
-      alert('Payment successful! Your order has been placed.');
+      // Show success popup instead of alert
+      setShowSuccessPopup(true);
       
     } catch (error) {
       console.error('Payment failed:', error);
@@ -90,6 +96,20 @@ export default function PaymentPage() {
     } finally {
       setIsProcessing(false);
     }
+  };
+
+  const handleCloseSuccessPopup = () => {
+    // Clear buy now item when closing the success popup
+    if (isBuyNowMode) {
+      clearBuyNowOrder();
+    }
+    
+    // Clear cart if in regular mode
+    if (!isBuyNowMode) {
+      clearCart();
+    }
+    
+    setShowSuccessPopup(false);
   };
 
   const paymentMethods = [
@@ -357,6 +377,14 @@ export default function PaymentPage() {
           </div>
         </div>
       </main>
+      
+      {/* Success Popup */}
+      {showSuccessPopup && (
+        <SuccessPopup
+          message="Payment Successful!"
+          onClose={handleCloseSuccessPopup}
+        />
+      )}
     </div>
   );
 }
