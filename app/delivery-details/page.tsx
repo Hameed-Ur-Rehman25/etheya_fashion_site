@@ -11,10 +11,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useRouter } from "next/navigation";
 
 export default function DeliveryDetailsPage() {
   const { cart, clearCart } = useCartContext();
   const { buyNowItem, isBuyNowMode, clearBuyNowItem } = useBuyNow();
+  const router = useRouter();
 
   // Determine which items to show and calculate totals
   let items: CartItem[] = [];
@@ -50,8 +52,8 @@ export default function DeliveryDetailsPage() {
       clearBuyNowItem();
     }
     
-    // TODO: Implement payment logic
-    console.log('Proceeding to payment...');
+    // Navigate to payment page
+    router.push('/payment');
   };
 
   return (
