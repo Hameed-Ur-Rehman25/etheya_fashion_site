@@ -1,16 +1,34 @@
 'use client'
 
-import { useState } from 'react'
-import { Heart, ShoppingCart } from 'lucide-react'
+import { useState, useMemo } from 'react'
+import { Heart, ShoppingCart, Filter } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Navbar } from '@/components/navbar'
 import { SimpleProductGrid } from '@/components/simple-product-grid'
 import { ProductModal } from '@/components/product-modal'
+import { ProductFilterSidebar } from '@/components/product-filter-sidebar'
 import { useWishlist } from '../../context/WishlistContext'
 import { useCartContext } from '../../context/CartContext'
 import { useRouter } from 'next/navigation'
-import { Product } from '@/types'
+import { Product, SearchFilters } from '@/types'
 import { useToast } from '@/hooks/use-toast'
+import { filterProducts, sortProducts } from '@/lib/product-utils'
+import { SORT_OPTIONS, PRICE_RANGES } from '@/lib/constants'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { 
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet'
 
 export default function WishlistPage() {
   const { wishlist, toggleWishlist, clearWishlist } = useWishlist();
@@ -18,7 +36,48 @@ export default function WishlistPage() {
   const router = useRouter();
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [filters, setFilters] = useState<SearchFilters>({
+    categories: [],
+    sizes: [],
+    availability: [],
+    types: [],
+    fabrics: [],
+    pieces: [],
+    priceRange: [PRICE_RANGES.MIN, PRICE_RANGES.MAX],
+    sortBy: 'newest'
+  });
   const { toast } = useToast();
+
+  // Apply filters and sorting to wishlist items
+  const filteredAndSortedWishlist = useMemo(() => {
+    const filtered = filterProducts(wishlist, filters);
+    return sortProducts(filtered, filters.sortBy);
+  }, [wishlist, filters]);
+
+  const handleFiltersChange = (newFilters: SearchFilters) => {
+    setFilters(newFilters);
+  };
+
+  const clearAllFilters = () => {
+    setFilters({
+      categories: [],
+      sizes: [],
+      availability: [],
+      types: [],
+      fabrics: [],
+      pieces: [],
+      priceRange: [PRICE_RANGES.MIN, PRICE_RANGES.MAX],
+      sortBy: 'newest'
+    });
+  };
+
+  const handleSortChange = (sortBy: SearchFilters['sortBy']) => {
+    setFilters(prev => ({
+      ...prev,
+      sortBy
+    }));
+  };
 
   const handleAddAllToCart = async () => {
     if (wishlist.length === 0) return;
@@ -107,14 +166,78 @@ export default function WishlistPage() {
             </div>
           ) : (
             <>
-              {/* Product Grid - Same as All Products */}
-              <SimpleProductGrid
-                products={wishlist}
-                onAddToCart={handleAddToCart}
-                onClick={handleProductClick}
-                emptyStateMessage="No items in your wishlist"
-                columns={3}
-              />
+              {/* Controls */}
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                <div className="flex items-center gap-2">
+                  {/* Mobile Filter Button */}
+                  <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
+                    <SheetTrigger asChild>
+                      <Button variant="outline" className="lg:hidden">
+                        <Filter className="w-4 h-4 mr-2" />
+                        Filters
+                      </Button>
+                    </SheetTrigger>
+                    <SheetContent side="left" className="w-80 p-0">
+                      <SheetHeader className="p-6 pb-0">
+                        <SheetTitle>Filters</SheetTitle>
+                        <SheetDescription>
+                          Filter your wishlist items by category, size, price, and more
+                        </SheetDescription>
+                      </SheetHeader>
+                      <div className="mt-6">
+                        <ProductFilterSidebar
+                          filters={filters}
+                          onFiltersChange={handleFiltersChange}
+                          onClearFilters={clearAllFilters}
+                        />
+                      </div>
+                    </SheetContent>
+                  </Sheet>
+                </div>
+
+                {/* Sort Dropdown */}
+                <Select value={filters.sortBy} onValueChange={handleSortChange}>
+                  <SelectTrigger className="w-48">
+                    <SelectValue placeholder="Sort by" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {SORT_OPTIONS.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Product Grid with Filters */}
+              <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                {/* Desktop Filters */}
+                <div className="hidden lg:block">
+                  <div className="sticky top-24">
+                    <ProductFilterSidebar
+                      filters={filters}
+                      onFiltersChange={handleFiltersChange}
+                      onClearFilters={clearAllFilters}
+                    />
+                  </div>
+                </div>
+
+                {/* Products */}
+                <div className="lg:col-span-3">
+                  <div className="mb-4 text-sm text-gray-600">
+                    Showing {filteredAndSortedWishlist.length} of {wishlist.length} wishlist items
+                  </div>
+                  
+                  <SimpleProductGrid
+                    products={filteredAndSortedWishlist}
+                    onAddToCart={handleAddToCart}
+                    onClick={handleProductClick}
+                    emptyStateMessage="No items match your current filters"
+                    columns={3}
+                  />
+                </div>
+              </div>
               
               {/* Wishlist Summary */}
               <div className="mt-12 bg-gray-50 rounded-lg p-8 text-center">

@@ -102,28 +102,28 @@ export const PRODUCTS: Product[] = [
 export const CATEGORIES: Category[] = [
   {
     id: 1,
-    title: 'UNSTITCHED',
+    title: 'Unstitched',
     image: '/assets/image.png',
     description: 'Premium fabric collections',
     slug: 'unstitched'
   },
   {
     id: 2,
-    title: 'FORMAL',
+    title: 'Formal',
     image: '/assets/image.png',
     description: 'Elegant formal wear',
     slug: 'formal'
   },
   {
     id: 3,
-    title: 'READY TO WEAR',
+    title: 'Ready to Wear',
     image: '/assets/image.png',
     description: 'Contemporary designs',
     slug: 'ready-to-wear'
   },
   {
     id: 4,
-    title: 'LUXURY LAWN',
+    title: 'Luxury Lawn',
     image: '/assets/image.png',
     description: 'Summer essentials',
     slug: 'luxury-lawn'
