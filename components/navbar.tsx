@@ -53,9 +53,19 @@ export function Navbar() {
                 <Link href="/products" className="text-gray-700 hover:text-gray-900 transition-colors font-happy-monkey text-base">
                   All Products
                 </Link>
-                <Link href="/about" className="text-gray-700 hover:text-gray-900 transition-colors font-happy-monkey text-base">
+                <a
+                  href="#footer"
+                  className="text-gray-700 hover:text-gray-900 transition-colors font-happy-monkey text-base"
+                  onClick={e => {
+                    e.preventDefault();
+                    const footer = document.getElementById('footer');
+                    if (footer) {
+                      footer.scrollIntoView({ behavior: 'smooth' });
+                    }
+                  }}
+                >
                   About
-                </Link>
+                </a>
                 <a
                   href="#footer"
                   className="text-gray-700 hover:text-gray-900 transition-colors font-happy-monkey text-base"
@@ -148,13 +158,20 @@ export function Navbar() {
                 >
                   Contact
                 </Link>
-                <Link 
-                  href="/about" 
+                <a 
+                  href="#footer" 
                   className="text-gray-700 hover:text-gray-900 transition-colors py-2"
-                  onClick={() => setIsMobileMenuOpen(false)}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setIsMobileMenuOpen(false);
+                    const footer = document.getElementById('footer');
+                    if (footer) {
+                      footer.scrollIntoView({ behavior: 'smooth' });
+                    }
+                  }}
                 >
                   About us
-                </Link>
+                </a>
               </div>
             </div>
           )}

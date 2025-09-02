@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { Search, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Dialog, DialogContent } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
 import Image from 'next/image'
 
 const searchResults = [
@@ -38,7 +38,7 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
       <DialogContent className="max-w-2xl p-0 top-20">
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-playfair font-bold">Search Products</h2>
+            <DialogTitle className="text-xl font-playfair font-bold">Search Products</DialogTitle>
             <Button variant="ghost" size="icon" onClick={onClose}>
               <X className="w-5 h-5" />
             </Button>

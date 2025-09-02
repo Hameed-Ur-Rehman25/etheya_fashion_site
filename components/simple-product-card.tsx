@@ -98,38 +98,6 @@ export function SimpleProductCard({
           </Button>
         </div>
 
-        {/* Add to Cart Icon - positioned at bottom-right within image */}
-        <div className={cn(
-          "absolute bottom-3 right-3 transition-all duration-300",
-          isHovered ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"
-        )}>
-          {onAddToCart && (
-            <Button
-              size="icon"
-              className="w-8 h-8 bg-black hover:bg-gray-800 text-white shadow-md"
-              onClick={handleAddToCart}
-              disabled={!product.inStock}
-            >
-              <Plus className="w-4 h-4" />
-            </Button>
-          )}
-        </div>
-
-        {/* Buy Now Icon - positioned at bottom-left within image */}
-        <div className={cn(
-          "absolute bottom-3 left-3 transition-all duration-300",
-          isHovered ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"
-        )}>
-          <Button
-            size="icon"
-            className="w-8 h-8 bg-gray-900 hover:bg-gray-800 text-white shadow-md"
-            onClick={handleBuyNow}
-            disabled={!product.inStock}
-          >
-            <CreditCard className="w-4 h-4" />
-          </Button>
-        </div>
-
         {/* Out of Stock Overlay */}
         {!product.inStock && (
           <div className="absolute inset-0 bg-white/80 flex items-center justify-center">

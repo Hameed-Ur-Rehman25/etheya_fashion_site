@@ -43,7 +43,7 @@ export function CategorySection() {
                   <h3 className="text-xl font-bold mb-2">{category.title}</h3>
                   <p className="text-sm opacity-90 mb-4">{category.description}</p>
                   
-                  <Link href={`/categories/${category.slug}`}>
+                  <Link href={`/products?category=${category.slug}`}>
                     <Button 
                       variant="outline" 
                       className="relative bg-white text-black border-white transition-all duration-300 overflow-hidden
