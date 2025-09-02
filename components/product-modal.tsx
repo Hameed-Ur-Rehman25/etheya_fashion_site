@@ -12,6 +12,7 @@ import { Badge } from '@/components/ui/badge'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { Product } from '@/types'
 import { formatPrice } from '@/lib/product-utils'
+import { useRouter } from 'next/navigation'
 
 interface ProductModalProps {
   product: Product | null
@@ -28,6 +29,7 @@ export function ProductModal({ product, isOpen, onClose }: ProductModalProps) {
 
   const { isWishlisted, toggleWishlist } = useWishlist();
   const { addToCart } = useCartContext();
+  const router = useRouter();
 
   if (!product) return null;
 
@@ -60,7 +62,22 @@ export function ProductModal({ product, isOpen, onClose }: ProductModalProps) {
       alert('Please select a size');
       return;
     }
-    console.log('Buy now:', { product, selectedSize, quantity });
+    
+    // Add to cart first, then navigate to delivery details
+    addToCart(product, quantity, selectedSize);
+    
+    // Close the modal
+    onClose();
+    
+    // Navigate to delivery details page
+    router.push('/delivery-details');
+    
+    // Show success toast
+    toast({
+      title: 'Proceeding to Checkout',
+      description: `${product.title} (${selectedSize}) x${quantity} added to cart and proceeding to checkout.`,
+      variant: 'default',
+    });
   }
 
   return (

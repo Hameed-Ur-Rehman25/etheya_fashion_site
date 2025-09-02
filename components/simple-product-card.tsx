@@ -2,11 +2,13 @@
 
 import { useState } from 'react'
 import { useWishlist } from '../context/WishlistContext'
+import { useCartContext } from '../context/CartContext'
 import Image from 'next/image'
-import { Heart, Plus } from 'lucide-react'
+import { Heart, Plus, CreditCard } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Product } from '@/types'
 import { cn } from '@/lib/utils'
+import { useRouter } from 'next/navigation'
 
 interface SimpleProductCardProps {
   product: Product
@@ -25,6 +27,8 @@ export function SimpleProductCard({
 }: SimpleProductCardProps) {
   const [isHovered, setIsHovered] = useState(false)
   const { toggleWishlist, isWishlisted } = useWishlist();
+  const { addToCart } = useCartContext();
+  const router = useRouter();
   
   // Use the second image for hover effect, fallback to first image if no second image
   const hoverImage = product.images && product.images.length > 1 
@@ -37,7 +41,6 @@ export function SimpleProductCard({
     onAddToCart?.(product)
   }
 
-
   const handleToggleWishlist = (e: React.MouseEvent) => {
     e.stopPropagation();
     toggleWishlist(product);
@@ -47,6 +50,17 @@ export function SimpleProductCard({
     console.log('🔍 Card clicked:', product.title)
     onClick?.(product)
   }
+
+  const handleBuyNow = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    
+    // Add to cart with default size and quantity
+    const defaultSize = product.sizes[0];
+    addToCart(product, 1, defaultSize);
+    
+    // Navigate to delivery details page
+    router.push('/delivery-details');
+  };
 
   return (
     <div
@@ -103,6 +117,21 @@ export function SimpleProductCard({
               <Plus className="w-4 h-4" />
             </Button>
           )}
+        </div>
+
+        {/* Buy Now Icon - positioned at bottom-left within image */}
+        <div className={cn(
+          "absolute bottom-3 left-3 transition-all duration-300",
+          isHovered ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"
+        )}>
+          <Button
+            size="icon"
+            className="w-8 h-8 bg-gray-900 hover:bg-gray-800 text-white shadow-md"
+            onClick={handleBuyNow}
+            disabled={!product.inStock}
+          >
+            <CreditCard className="w-4 h-4" />
+          </Button>
         </div>
 
         {/* Out of Stock Overlay */}

@@ -1,12 +1,14 @@
 'use client'
 
 import Image from 'next/image'
-import { Heart, ShoppingBag } from 'lucide-react'
+import { Heart, ShoppingBag, CreditCard } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Product, ViewMode } from '@/types'
 import { useWishlist } from '../context/WishlistContext'
+import { useCartContext } from '../context/CartContext'
 import { formatPrice, truncateText } from '@/lib/product-utils'
 import { cn } from '@/lib/utils'
+import { useRouter } from 'next/navigation'
 
 interface ProductCardProps {
   product: Product
@@ -27,6 +29,19 @@ export function ProductCard({
 }: ProductCardProps) {
   const isListView = viewMode === 'list'
   const { toggleWishlist, isWishlisted } = useWishlist();
+  const { addToCart } = useCartContext();
+  const router = useRouter();
+
+  const handleBuyNow = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    
+    // Add to cart with default size and quantity
+    const defaultSize = product.sizes[0];
+    addToCart(product, 1, defaultSize);
+    
+    // Navigate to delivery details page
+    router.push('/delivery-details');
+  };
 
   return (
     <div
@@ -162,6 +177,19 @@ export function ProductCard({
               Add to Cart
             </Button>
           )}
+          
+          {/* Buy Now Button */}
+          <Button
+            onClick={handleBuyNow}
+            disabled={!product.inStock}
+            className={cn(
+              "bg-gray-900 text-white hover:bg-gray-800 transition-all duration-300",
+              isListView ? "flex-shrink-0" : "flex-1"
+            )}
+          >
+            <CreditCard className="w-4 h-4 mr-2" />
+            Buy Now
+          </Button>
           
           {onQuickView && (
             <Button
