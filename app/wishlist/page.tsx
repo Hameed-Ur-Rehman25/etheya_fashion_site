@@ -1,30 +1,41 @@
 'use client'
 
-import Image from 'next/image'
+import { useState } from 'react'
 import { Heart, ShoppingCart } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-
 import { Navbar } from '@/components/navbar'
-
+import { SimpleProductGrid } from '@/components/simple-product-grid'
+import { ProductModal } from '@/components/product-modal'
 import { useWishlist } from '../../context/WishlistContext'
-// import { useCartContext } from '../../context/CartContext'
+import { useCartContext } from '../../context/CartContext'
 import { useRouter } from 'next/navigation'
-
+import { Product } from '@/types'
 
 export default function WishlistPage() {
   const { wishlist, toggleWishlist } = useWishlist();
-  // const { addToCart } = useCartContext();
+  const { addToCart } = useCartContext();
   const router = useRouter();
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
-
-  // const handleAddAllToCart = () => {
-  //   wishlist.forEach((item) => {
-  //     addToCart(item);
-  //   });
-  // };
+  const handleAddAllToCart = () => {
+    wishlist.forEach((item) => {
+      // Add each item to cart with default size and quantity
+      const defaultSize = item.sizes[0];
+      addToCart(item, 1, defaultSize);
+    });
+  };
 
   const handleContinueShopping = () => {
     router.push('/products');
+  };
+
+  const handleAddToCart = (product: Product) => {
+    const defaultSize = product.sizes[0];
+    addToCart(product, 1, defaultSize);
+  };
+
+  const handleProductClick = (product: Product) => {
+    setSelectedProduct(product);
   };
 
   return (
@@ -53,67 +64,22 @@ export default function WishlistPage() {
               <Button
                 size="lg"
                 className="fill-button bg-gray-900 text-white hover:bg-gray-800 px-8 py-3"
+                onClick={handleContinueShopping}
               >
                 Continue Shopping
               </Button>
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {wishlist.map((item) => (
-                  <div
-                    key={item.id}
-                    className="group cursor-pointer transform transition-all duration-300 hover:-translate-y-2 hover:shadow-xl bg-white rounded-lg overflow-hidden border"
-                  >
-                    <div className="relative overflow-hidden">
-                      <Image
-                        src={item.image || "/placeholder.svg"}
-                        alt={item.title}
-                        width={300}
-                        height={400}
-                        className="object-cover w-full h-80 group-hover:scale-105 transition-transform duration-500"
-                      />
-                      {/* Remove from Wishlist Button */}
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="absolute top-4 right-4 bg-white/80 hover:bg-white text-red-500 hover:text-red-600 shadow-md"
-                        onClick={() => toggleWishlist(item)}
-                      >
-                        <Heart className="w-5 h-5 fill-current" />
-                      </Button>
-                      {/* Category Badge */}
-                      <div className="absolute top-4 left-4">
-                        <span className="bg-white/90 text-gray-800 text-xs font-medium px-3 py-1 rounded-full">
-                          {item.category}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="p-6">
-                      <h3 className="text-lg font-medium text-gray-900 mb-2">
-                        {item.title}
-                      </h3>
-                      <p className="text-xl font-bold text-gray-900 mb-4">
-                        Rs. {item.price.toLocaleString()}
-                      </p>
-                      <div className="flex space-x-3">
-                        <Button
-                          className="flex-1 fill-button bg-gray-900 text-white hover:bg-gray-800 transition-all duration-300"
-                        >
-                          <ShoppingCart className="w-4 h-4 mr-2" />
-                          Add to Cart
-                        </Button>
-                        <Button
-                          variant="outline"
-                          className="px-4 hover:bg-gray-50"
-                        >
-                          View
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              {/* Product Grid - Same as All Products */}
+              <SimpleProductGrid
+                products={wishlist}
+                onAddToCart={handleAddToCart}
+                onClick={handleProductClick}
+                emptyStateMessage="No items in your wishlist"
+                columns={3}
+              />
+              
               {/* Wishlist Summary */}
               <div className="mt-12 bg-gray-50 rounded-lg p-8 text-center">
                 <h2 className="text-xl font-playfair font-bold text-gray-900 mb-2">
@@ -126,8 +92,9 @@ export default function WishlistPage() {
                   <Button
                     size="lg"
                     className="fill-button bg-gray-900 text-white hover:bg-gray-800 px-8 py-3"
-                    // onClick={handleAddAllToCart}
+                    onClick={handleAddAllToCart}
                   >
+                    <ShoppingCart className="w-5 h-5 mr-2" />
                     Add All to Cart
                   </Button>
                   <Button
@@ -144,6 +111,13 @@ export default function WishlistPage() {
           )}
         </div>
       </div>
+
+      {/* Product Modal - Same as All Products */}
+      <ProductModal
+        product={selectedProduct}
+        isOpen={!!selectedProduct}
+        onClose={() => setSelectedProduct(null)}
+      />
     </div>
   )
 }
