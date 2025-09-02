@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useWishlist } from '../context/WishlistContext'
-import { useCartContext } from '../context/CartContext'
+import { useBuyNow } from '../context/BuyNowContext'
 import Image from 'next/image'
 import { Heart, Plus, CreditCard } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -27,7 +27,7 @@ export function SimpleProductCard({
 }: SimpleProductCardProps) {
   const [isHovered, setIsHovered] = useState(false)
   const { toggleWishlist, isWishlisted } = useWishlist();
-  const { addToCart } = useCartContext();
+  const { setBuyNowItem } = useBuyNow();
   const router = useRouter();
   
   // Use the second image for hover effect, fallback to first image if no second image
@@ -54,9 +54,9 @@ export function SimpleProductCard({
   const handleBuyNow = (e: React.MouseEvent) => {
     e.stopPropagation();
     
-    // Add to cart with default size and quantity
+    // Set the buy now item with default size and quantity
     const defaultSize = product.sizes[0];
-    addToCart(product, 1, defaultSize);
+    setBuyNowItem(product, 1, defaultSize);
     
     // Navigate to delivery details page
     router.push('/delivery-details');

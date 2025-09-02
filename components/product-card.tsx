@@ -5,7 +5,7 @@ import { Heart, ShoppingBag, CreditCard } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Product, ViewMode } from '@/types'
 import { useWishlist } from '../context/WishlistContext'
-import { useCartContext } from '../context/CartContext'
+import { useBuyNow } from '../context/BuyNowContext'
 import { formatPrice, truncateText } from '@/lib/product-utils'
 import { cn } from '@/lib/utils'
 import { useRouter } from 'next/navigation'
@@ -29,15 +29,15 @@ export function ProductCard({
 }: ProductCardProps) {
   const isListView = viewMode === 'list'
   const { toggleWishlist, isWishlisted } = useWishlist();
-  const { addToCart } = useCartContext();
+  const { setBuyNowItem } = useBuyNow();
   const router = useRouter();
 
   const handleBuyNow = (e: React.MouseEvent) => {
     e.stopPropagation();
     
-    // Add to cart with default size and quantity
+    // Set the buy now item with default size and quantity
     const defaultSize = product.sizes[0];
-    addToCart(product, 1, defaultSize);
+    setBuyNowItem(product, 1, defaultSize);
     
     // Navigate to delivery details page
     router.push('/delivery-details');

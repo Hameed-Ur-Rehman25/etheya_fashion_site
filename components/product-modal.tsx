@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { toast } from '@/hooks/use-toast'
 import { useCartContext } from '@/context/CartContext'
 import { useWishlist } from '@/context/WishlistContext'
+import { useBuyNow } from '@/context/BuyNowContext'
 import Image from 'next/image'
 import { X, Heart, Plus, Minus, ShoppingBag, ChevronDown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -29,6 +30,7 @@ export function ProductModal({ product, isOpen, onClose }: ProductModalProps) {
 
   const { isWishlisted, toggleWishlist } = useWishlist();
   const { addToCart } = useCartContext();
+  const { setBuyNowItem } = useBuyNow();
   const router = useRouter();
 
   if (!product) return null;
@@ -63,8 +65,8 @@ export function ProductModal({ product, isOpen, onClose }: ProductModalProps) {
       return;
     }
     
-    // Add to cart first, then navigate to delivery details
-    addToCart(product, quantity, selectedSize);
+    // Set the buy now item (this will clear any previous buy now items)
+    setBuyNowItem(product, quantity, selectedSize);
     
     // Close the modal
     onClose();
@@ -74,8 +76,8 @@ export function ProductModal({ product, isOpen, onClose }: ProductModalProps) {
     
     // Show success toast
     toast({
-      title: 'Proceeding to Checkout',
-      description: `${product.title} (${selectedSize}) x${quantity} added to cart and proceeding to checkout.`,
+      title: 'Proceeding to Quick Checkout',
+      description: `${product.title} (${selectedSize}) x${quantity} - proceeding to immediate purchase.`,
       variant: 'default',
     });
   }

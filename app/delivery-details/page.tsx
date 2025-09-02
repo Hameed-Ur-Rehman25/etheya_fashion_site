@@ -2,6 +2,7 @@
 
 import React from "react";
 import { useCartContext } from "@/context/CartContext";
+import { useBuyNow } from "@/context/BuyNowContext";
 import Image from "next/image";
 import { CartItem } from "@/types";
 import { Navbar } from "@/components/navbar";
@@ -13,11 +14,45 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 export default function DeliveryDetailsPage() {
   const { cart, clearCart } = useCartContext();
+  const { buyNowItem, isBuyNowMode, clearBuyNowItem } = useBuyNow();
 
-  // Calculate subtotal, shipping, total
-  const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const shipping = cart.length > 0 ? 100 : 0;
-  const total = subtotal + shipping;
+  // Determine which items to show and calculate totals
+  let items: CartItem[] = [];
+  let subtotal = 0;
+  let shipping = 0;
+  let total = 0;
+  let pageTitle = "Checkout";
+  let pageDescription = "Complete your order with delivery details";
+
+  if (isBuyNowMode && buyNowItem) {
+    // Buy Now Mode - show only the buy now item
+    items = [{
+      product: buyNowItem.product,
+      quantity: buyNowItem.quantity,
+      selectedSize: buyNowItem.selectedSize,
+      price: buyNowItem.price
+    }];
+    subtotal = buyNowItem.price * buyNowItem.quantity;
+    pageTitle = "Quick Checkout";
+    pageDescription = "Complete your immediate purchase";
+  } else {
+    // Regular Cart Mode - show all cart items
+    items = cart;
+    subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  }
+
+  shipping = items.length > 0 ? 100 : 0;
+  total = subtotal + shipping;
+
+  const handleProceedToPayment = () => {
+    // Clear buy now item if in buy now mode
+    if (isBuyNowMode) {
+      clearBuyNowItem();
+    }
+    
+    // TODO: Implement payment logic
+    console.log('Proceeding to payment...');
+  };
 
   return (
     <div className="min-h-screen bg-white">
@@ -25,8 +60,17 @@ export default function DeliveryDetailsPage() {
       <main className="pt-16">
         <div className="max-w-7xl mx-auto px-4 py-8">
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Checkout</h1>
-            <p className="text-gray-600">Complete your order with delivery details</p>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">{pageTitle}</h1>
+            <p className="text-gray-600">{pageDescription}</p>
+            
+            {/* Buy Now Mode Indicator */}
+            {isBuyNowMode && (
+              <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <p className="text-blue-800 text-sm">
+                  <strong>Quick Checkout Mode:</strong> You're purchasing this item immediately without adding it to your cart.
+                </p>
+              </div>
+            )}
           </div>
           
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -174,6 +218,7 @@ export default function DeliveryDetailsPage() {
                 <Button
                   type="button"
                   size="lg"
+                  onClick={handleProceedToPayment}
                   className="w-full mt-8 bg-gray-900 text-white hover:bg-gray-800 py-3 text-lg font-medium transition-colors"
                 >
                   Proceed to Payment
@@ -181,19 +226,21 @@ export default function DeliveryDetailsPage() {
               </form>
             </div>
             
-            {/* Right: Cart Summary */}
+            {/* Right: Order Summary */}
             <div className="lg:col-span-1">
               <div className="bg-gray-50 p-6 rounded-lg shadow-sm border sticky top-24">
-                <h2 className="text-2xl font-bold mb-6 text-gray-900">Order Summary</h2>
+                <h2 className="text-2xl font-bold mb-6 text-gray-900">
+                  {isBuyNowMode ? "Quick Purchase Summary" : "Order Summary"}
+                </h2>
                 
-                {cart.length === 0 ? (
+                {items.length === 0 ? (
                   <div className="text-center py-8 text-gray-500">
-                    <p>Your cart is empty</p>
+                    <p>No items to display</p>
                   </div>
                 ) : (
                   <>
                     <div className="space-y-4 mb-6">
-                      {cart.map((item: CartItem, idx) => (
+                      {items.map((item: CartItem, idx) => (
                         <div key={idx} className="flex items-center space-x-3">
                           <div className="relative w-16 h-16">
                             <Image 
