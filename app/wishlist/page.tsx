@@ -10,19 +10,48 @@ import { useWishlist } from '../../context/WishlistContext'
 import { useCartContext } from '../../context/CartContext'
 import { useRouter } from 'next/navigation'
 import { Product } from '@/types'
+import { useToast } from '@/hooks/use-toast'
 
 export default function WishlistPage() {
-  const { wishlist, toggleWishlist } = useWishlist();
+  const { wishlist, toggleWishlist, clearWishlist } = useWishlist();
   const { addToCart } = useCartContext();
   const router = useRouter();
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const { toast } = useToast();
 
-  const handleAddAllToCart = () => {
-    wishlist.forEach((item) => {
+  const handleAddAllToCart = async () => {
+    if (wishlist.length === 0) return;
+    
+    setIsAddingToCart(true);
+    
+    try {
       // Add each item to cart with default size and quantity
-      const defaultSize = item.sizes[0];
-      addToCart(item, 1, defaultSize);
-    });
+      wishlist.forEach((item) => {
+        const defaultSize = item.sizes[0];
+        addToCart(item, 1, defaultSize);
+      });
+      
+      // Show success message
+      toast({
+        title: "Items Added to Cart!",
+        description: `Successfully added ${wishlist.length} item${wishlist.length > 1 ? 's' : ''} from your wishlist to cart.`,
+        variant: "default",
+      });
+      
+      // Clear the wishlist after successful addition
+      clearWishlist();
+      
+    } catch (error) {
+      // Show error message if something goes wrong
+      toast({
+        title: "Error",
+        description: "Failed to add items to cart. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsAddingToCart(false);
+    }
   };
 
   const handleContinueShopping = () => {
@@ -32,6 +61,13 @@ export default function WishlistPage() {
   const handleAddToCart = (product: Product) => {
     const defaultSize = product.sizes[0];
     addToCart(product, 1, defaultSize);
+    
+    // Show success message for individual item
+    toast({
+      title: "Item Added to Cart!",
+      description: `${product.title} has been added to your cart.`,
+      variant: "default",
+    });
   };
 
   const handleProductClick = (product: Product) => {
@@ -86,16 +122,26 @@ export default function WishlistPage() {
                   Ready to shop?
                 </h2>
                 <p className="text-gray-600 mb-6">
-                  You have {wishlist.length} items in your wishlist
+                  You have {wishlist.length} item{wishlist.length > 1 ? 's' : ''} in your wishlist
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <Button
                     size="lg"
                     className="fill-button bg-gray-900 text-white hover:bg-gray-800 px-8 py-3"
                     onClick={handleAddAllToCart}
+                    disabled={isAddingToCart}
                   >
-                    <ShoppingCart className="w-5 h-5 mr-2" />
-                    Add All to Cart
+                    {isAddingToCart ? (
+                      <div className="flex items-center space-x-2">
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        <span>Adding to Cart...</span>
+                      </div>
+                    ) : (
+                      <>
+                        <ShoppingCart className="w-5 h-5 mr-2" />
+                        Add All to Cart
+                      </>
+                    )}
                   </Button>
                   <Button
                     variant="outline"

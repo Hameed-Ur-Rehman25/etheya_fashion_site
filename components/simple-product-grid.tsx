@@ -69,7 +69,7 @@ export function SimpleProductGrid({
   return (
     <div
       className={cn(
-        "grid gap-6",
+  "grid gap-1",
         gridCols[columns as keyof typeof gridCols] || gridCols[4],
         className
       )}
@@ -77,8 +77,7 @@ export function SimpleProductGrid({
       {products.map((product) => (
         <SimpleProductCard
           key={product.id}
-          product={product}
-          onAddToCart={onAddToCart}
+          product={product}          onAddToCart={onAddToCart}
           onClick={onClick}
         />
       ))}
