@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback } from 'react'
-import { Product, SearchFilters, ProductFilters } from '../types/product.types'
+import { Product } from '../types/product.types'
+import { SearchFilters } from '@/types'
 import { filterProducts, sortProducts, searchProducts } from '../utils/product.utils'
+import { DatabaseService } from '@/lib/database-service'
 
 interface UseProductsOptions {
   initialProducts?: Product[]
@@ -16,11 +18,20 @@ export function useProducts(options: UseProductsOptions = {}) {
     options.initialFilters || {
       categories: [],
       sizes: [],
+      availability: [],
+      types: [],
+      fabrics: [],
+      pieces: [],
       priceRange: [0, 50000],
       sortBy: 'newest'
     }
   )
   const [searchQuery, setSearchQuery] = useState('')
+
+  // Load products from Supabase on component mount
+  useEffect(() => {
+    loadProductsFromSupabase()
+  }, [])
 
   // Apply filters and search whenever products, filters, or search query changes
   useEffect(() => {
@@ -40,6 +51,31 @@ export function useProducts(options: UseProductsOptions = {}) {
     setFilteredProducts(result)
   }, [products, filters, searchQuery])
 
+  const loadProductsFromSupabase = useCallback(async () => {
+    setLoading(true)
+    setError(null)
+    
+    try {
+      const { data: supabaseProducts, error: supabaseError } = await DatabaseService.getProducts()
+      
+      if (supabaseError) {
+        throw new Error(supabaseError.message)
+      }
+      
+      if (supabaseProducts) {
+        setProducts(supabaseProducts)
+      } else {
+        setProducts([])
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load products from database')
+      // Fallback to empty array if database fails
+      setProducts([])
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
   const updateFilters = useCallback((newFilters: Partial<SearchFilters>) => {
     setFilters(prev => ({ ...prev, ...newFilters }))
   }, [])
@@ -48,6 +84,10 @@ export function useProducts(options: UseProductsOptions = {}) {
     setFilters({
       categories: [],
       sizes: [],
+      availability: [],
+      types: [],
+      fabrics: [],
+      pieces: [],
       priceRange: [0, 50000],
       sortBy: 'newest'
     })
@@ -100,6 +140,7 @@ export function useProducts(options: UseProductsOptions = {}) {
     updateFilters,
     clearFilters,
     loadProducts,
+    loadProductsFromSupabase, // New method to reload from Supabase
     addProduct,
     updateProduct,
     removeProduct,

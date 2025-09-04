@@ -1,35 +1,97 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { ChevronLeft, ChevronRight, Heart } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { ProductModal } from './product-modal'
 import { SectionContainer } from './section-container'
-import { PRODUCTS } from '@/lib/constants'
 import { Product } from '@/types'
 import { Lens } from '@/components/ui/lens'
+import { DatabaseService } from '@/lib/database-service'
 
 export function NewArrivalsCarousel() {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
+  const [products, setProducts] = useState<Product[]>([])
+  const [loading, setLoading] = useState(true)
   
-  // Use the first 5 products as new arrivals
-  const products = PRODUCTS.slice(0, 5)
+  // Fetch products from Supabase on component mount
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const { data: supabaseProducts, error } = await DatabaseService.getProducts()
+        if (error) {
+          console.error('Error fetching products:', error)
+          setProducts([])
+        } else if (supabaseProducts) {
+          // Use the first 5 products as new arrivals
+          setProducts(supabaseProducts.slice(0, 5))
+        }
+      } catch (err) {
+        console.error('Failed to fetch products:', err)
+        setProducts([])
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchProducts()
+  }, [])
 
   const nextSlide = () => {
+    if (products.length === 0) return
     setCurrentIndex((prev) => 
       prev + 1 >= products.length ? 0 : prev + 1
     )
   }
 
   const prevSlide = () => {
+    if (products.length === 0) return
     setCurrentIndex((prev) => 
       prev === 0 ? products.length - 1 : prev - 1
     )
   }
 
   const currentProduct = products[currentIndex]
+
+  // Show loading state
+  if (loading) {
+    return (
+      <section className="relative py-20 px-6 bg-cover bg-center bg-no-repeat overflow-hidden"
+        style={{ backgroundImage: 'url(/assets/bg1.png)', backgroundBlendMode: 'overlay', backgroundColor: 'rgba(255, 255, 255, 0.8)' }}>
+        <div className="relative z-10 max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-playfair font-bold text-gray-900 mb-4">
+              New Arrivals
+            </h2>
+            <p className="text-gray-800 max-w-2xl mx-auto">
+              Loading latest products...
+            </p>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  // Show empty state if no products
+  if (products.length === 0) {
+    return (
+      <section className="relative py-20 px-6 bg-cover bg-center bg-no-repeat overflow-hidden"
+        style={{ backgroundImage: 'url(/assets/bg1.png)', backgroundBlendMode: 'overlay', backgroundColor: 'rgba(255, 255, 255, 0.8)' }}>
+        <div className="relative z-10 max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-playfair font-bold text-gray-900 mb-4">
+              New Arrivals
+            </h2>
+            <p className="text-gray-800 max-w-2xl mx-auto">
+              No products available at the moment
+            </p>
+          </div>
+        </div>
+      </section>
+    )
+  }
 
   return (
     <>
@@ -77,7 +139,7 @@ export function NewArrivalsCarousel() {
                 <div className="relative overflow-hidden rounded-lg bg-white shadow-lg">
                   <Lens zoomFactor={1.8} lensSize={200}>
                     <Image
-                      src="/assets/image3.jpeg"
+                      src={currentProduct.image}
                       alt={currentProduct.title}
                       width={500}
                       height={600}
@@ -93,8 +155,6 @@ export function NewArrivalsCarousel() {
                   >
                     <Heart className="w-5 h-5" />
                   </Button>
-                  
-                  {/* ...removed NEW tag... */}
                 </div>
               </div>
               
@@ -103,7 +163,7 @@ export function NewArrivalsCarousel() {
                 <div className="relative overflow-hidden rounded-lg bg-white shadow-md mb-6">
                   <Lens zoomFactor={1.6} lensSize={150}>
                     <Image
-                      src="/assets/image3.jpeg"
+                      src={currentProduct.images && currentProduct.images.length > 1 ? currentProduct.images[1] : currentProduct.image}
                       alt={`${currentProduct.title} - view 2`}
                       width={200}
                       height={280}

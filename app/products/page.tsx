@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { Filter, LayoutGrid } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -25,70 +25,59 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet'
-import { PRODUCTS, CATEGORIES } from '@/src/data/products.data'
+import { CATEGORIES } from '@/src/data/products.data'
 import { SORT_OPTIONS, PRICE_RANGES } from '@/lib/constants'
 import { Product, SearchFilters } from '@/types'
-import { filterProducts, sortProducts } from '@/lib/product-utils'
+import { useProducts } from '@/src/features/products/hooks/use-products'
 
-export default function ProductsPage() {
+function ProductsPageContent() {
   const searchParams = useSearchParams()
   const categorySlug = searchParams.get('category')
   
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
   const [viewMode] = useState<'simple'>('simple')
   const [isFilterOpen, setIsFilterOpen] = useState(false)
-  const [filters, setFilters] = useState<SearchFilters>({
-    categories: [],
-    sizes: [],
-    availability: [],
-    types: [],
-    fabrics: [],
-    pieces: [],
-    priceRange: [PRICE_RANGES.MIN, PRICE_RANGES.MAX],
-    sortBy: 'newest'
-  })
+  
+  // Use the products hook instead of static data
+  const { 
+    products: PRODUCTS, 
+    filteredProducts, 
+    loading, 
+    error,
+    filters, 
+    updateFilters,
+    clearFilters
+  } = useProducts()
 
   // Set initial category filter based on URL parameter
   useEffect(() => {
     if (categorySlug) {
       const category = CATEGORIES.find(cat => cat.slug === categorySlug)
       if (category) {
-        setFilters(prev => ({
-          ...prev,
-          categories: [category.title]
-        }))
+        updateFilters({ categories: [category.title] })
       }
     }
-  }, [categorySlug])
+  }, [categorySlug, updateFilters])
 
   // Apply filters and sorting
   const filteredAndSortedProducts = useMemo(() => {
-    const filtered = filterProducts(PRODUCTS, filters)
-    return sortProducts(filtered, filters.sortBy)
-  }, [filters])
+    if (loading || error) return []
+    return filteredProducts
+  }, [filteredProducts, loading, error])
 
   const handleFiltersChange = (newFilters: SearchFilters) => {
-    setFilters(newFilters)
-  }
-
-  const clearAllFilters = () => {
-    setFilters({
-      categories: [],
-      sizes: [],
-      availability: [],
-      types: [],
-      fabrics: [],
-      pieces: [],
-      priceRange: [PRICE_RANGES.MIN, PRICE_RANGES.MAX],
-      sortBy: 'newest'
+    // Update filters through the hook
+    Object.entries(newFilters).forEach(([key, value]) => {
+      updateFilters({ [key]: value })
     })
   }
 
+  const clearAllFilters = () => {
+    clearFilters()
+  }
+
   const handleSortChange = (sortBy: SearchFilters['sortBy']) => {
-    setFilters(prev => ({
-      ...prev,
-      sortBy
-    }))
+    updateFilters({ sortBy })
   }
 
   const handleAddToCart = (product: Product) => {
@@ -100,101 +89,103 @@ export default function ProductsPage() {
     setSelectedProduct(product)
   }
 
-  // Get category title for display
-  const currentCategory = categorySlug ? CATEGORIES.find(cat => cat.slug === categorySlug) : null
+  // Get current category for display
+  const currentCategory = categorySlug 
+    ? CATEGORIES.find(cat => cat.slug === categorySlug)
+    : null
+
   const pageTitle = currentCategory ? `${currentCategory.title} Collection` : 'All Products'
-  const pageDescription = currentCategory 
-    ? `Explore our ${currentCategory.title.toLowerCase()} collection` 
+  const productCountText = loading 
+    ? 'Loading products...'
     : `Showing ${filteredAndSortedProducts.length} of ${PRODUCTS.length} products`
 
   return (
     <div className="min-h-screen bg-white">
       <Navbar />
-      
       <main className="pt-16">
         <SectionContainer>
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">{pageTitle}</h1>
-            <p className="text-gray-600">
-              {pageDescription}
+          {/* Header */}
+          <div className="text-center mb-12">
+            <h1 className="text-4xl md:text-5xl font-playfair font-bold text-gray-900 mb-4">
+              {pageTitle}
+            </h1>
+            <p className="text-gray-600 text-lg">
+              {productCountText}
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-            {/* Desktop Filters */}
-            <div className="hidden lg:block">
-              <div className="sticky top-24">
+          {/* Mobile Filter Button */}
+          <div className="lg:hidden mb-6">
+            <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
+              <SheetTrigger asChild>
+                <Button variant="outline" className="w-full">
+                  <Filter className="w-4 h-4 mr-2" />
+                  Filter products by category, size, price, and more
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="w-80">
+                <SheetHeader>
+                  <SheetTitle>Filters</SheetTitle>
+                  <SheetDescription>
+                    Filter products by category, size, price, and more
+                  </SheetDescription>
+                </SheetHeader>
                 <ProductFilterSidebar
                   filters={filters}
                   onFiltersChange={handleFiltersChange}
                   onClearFilters={clearAllFilters}
                 />
-              </div>
+              </SheetContent>
+            </Sheet>
+          </div>
+
+          <div className="flex gap-8">
+            {/* Desktop Sidebar */}
+            <div className="hidden lg:block w-64 flex-shrink-0">
+              <ProductFilterSidebar
+                filters={filters}
+                onFiltersChange={handleFiltersChange}
+                onClearFilters={clearAllFilters}
+              />
             </div>
 
-            {/* Products */}
-            <div className="lg:col-span-3">
-              {/* Controls */}
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-                <div className="flex items-center gap-2">
-                  {/* Mobile Filter Button */}
-                  <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
-                    <SheetTrigger asChild>
-                      <Button variant="outline" className="lg:hidden">
-                        <Filter className="w-4 h-4 mr-2" />
-                        Filters
-                      </Button>
-                    </SheetTrigger>
-                    <SheetContent side="left" className="w-80 p-0">
-                      <SheetHeader className="p-6 pb-0">
-                        <SheetTitle>Filters</SheetTitle>
-                        <SheetDescription>
-                          Filter products by category, size, price, and more
-                        </SheetDescription>
-                      </SheetHeader>
-                      <div className="mt-6">
-                        <ProductFilterSidebar
-                          filters={filters}
-                          onFiltersChange={handleFiltersChange}
-                          onClearFilters={clearAllFilters}
-                        />
-                      </div>
-                    </SheetContent>
-                  </Sheet>
-
-                  {/* View Mode Toggle */}
-                  <div className="flex border rounded-lg p-1">
-                    <Button
-                      variant="default"
-                      size="sm"
-                    >
-                      <LayoutGrid className="w-4 h-4" />
-                    </Button>
-                  </div>
+            {/* Main Content */}
+            <div className="flex-1">
+              {/* Sort Controls */}
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-4">
+                  <span className="text-sm text-gray-600">Sort by:</span>
+                  <Select value={filters.sortBy} onValueChange={handleSortChange}>
+                    <SelectTrigger className="w-40">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {SORT_OPTIONS.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
-                {/* Sort Dropdown */}
-                <Select value={filters.sortBy} onValueChange={handleSortChange}>
-                  <SelectTrigger className="w-48">
-                    <SelectValue placeholder="Sort by" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {SORT_OPTIONS.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className={viewMode === 'simple' ? 'bg-gray-900 text-white' : ''}
+                  >
+                    <LayoutGrid className="w-4 h-4" />
+                  </Button>
+                </div>
               </div>
 
-              {/* Product Grid */}
+              {/* Products */}
               <SimpleProductGrid
                 products={filteredAndSortedProducts}
                 onAddToCart={handleAddToCart}
                 onClick={handleProductClick}
                 emptyStateMessage="No products match your current filters"
-                columns={4}
               />
             </div>
           </div>
@@ -264,5 +255,20 @@ export default function ProductsPage() {
         onClose={() => setSelectedProduct(null)}
       />
     </div>
+  )
+}
+
+export default function ProductsPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading products...</p>
+        </div>
+      </div>
+    }>
+      <ProductsPageContent />
+    </Suspense>
   )
 }

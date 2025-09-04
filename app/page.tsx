@@ -1,7 +1,7 @@
 
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -17,64 +17,38 @@ import { ProductModal } from '@/components/product-modal'
 import { Spotlight } from "@/components/ui/spotlight"
 import { ReviewsSection } from '@/components/reviews-section'
 import { Product } from '@/types'
+import { DatabaseService } from '@/lib/database-service'
 
 import { ProductCard } from '@/components/ProductCard'
-
-// Test products data
-const TEST_PRODUCTS: Product[] = [
-  {
-    id: 1,
-    title: 'Unstitched Summer Embroidered Lawn Use-9250',
-    price: 'Rs. 6,250',
-    image: '/assets/image1.png',
-    description: 'Beautiful embroidered lawn suit perfect for summer occasions.',
-    sizes: ['S', 'M', 'L', 'XL'],
-    images: ['/assets/image1.png', '/assets/image2.png'],
-    category: 'Unstitched',
-    inStock: true,
-    featured: true
-  },
-  {
-    id: 2,
-    title: 'Silk Formal Dress Collection',
-    price: 'Rs. 12,500',
-    image: '/assets/image2.png',
-    description: 'Elegant silk formal dress with intricate detailing.',
-    sizes: ['S', 'M', 'L', 'XL'],
-    images: ['/assets/image2.png', '/assets/image3.jpeg'],
-    category: 'Formal',
-    inStock: true,
-    featured: true
-  },
-  {
-    id: 3,
-    title: 'Cotton Casual Wear Ensemble',
-    price: 'Rs. 4,200',
-    image: '/assets/image3.jpeg',
-    description: 'Comfortable cotton casual wear for everyday use.',
-    sizes: ['S', 'M', 'L', 'XL'],
-    images: ['/assets/image3.jpeg', '/assets/image1.png'],
-    category: 'Ready to Wear',
-    inStock: true,
-    featured: false
-  },
-  {
-    id: 4,
-    title: 'Designer Party Wear Premium',
-    price: 'Rs. 18,000',
-    image: '/assets/image.png',
-    description: 'Stunning designer party wear with premium fabric.',
-    sizes: ['S', 'M', 'L', 'XL'],
-    images: ['/assets/image.png', '/assets/image2.png'],
-    category: 'Luxury Lawn',
-    inStock: true,
-    featured: true
-  }
-]
 
 export default function HomePage() {
   const [wishlistedIds, setWishlistedIds] = useState<Set<number>>(new Set())
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
+  const [topProducts, setTopProducts] = useState<Product[]>([])
+  const [loading, setLoading] = useState(true)
+
+  // Fetch top products from Supabase on component mount
+  useEffect(() => {
+    const fetchTopProducts = async () => {
+      try {
+        const { data: supabaseProducts, error } = await DatabaseService.getProducts()
+        if (error) {
+          console.error('Error fetching products:', error)
+          setTopProducts([])
+        } else if (supabaseProducts) {
+          // Use the first 4 products as top products
+          setTopProducts(supabaseProducts.slice(0, 4))
+        }
+      } catch (err) {
+        console.error('Failed to fetch products:', err)
+        setTopProducts([])
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchTopProducts()
+  }, [])
 
   const handleAddToCart = (product: Product) => {
     console.log('Add to cart:', product.title)
@@ -98,6 +72,7 @@ export default function HomePage() {
     console.log('Opening product modal for:', product.title)
     setSelectedProduct(product)
   }
+
   return (
     <div className="min-h-screen bg-white">
       <Navbar />
@@ -120,16 +95,32 @@ export default function HomePage() {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {TEST_PRODUCTS.slice(0, 4).map((product) => (
-              <SimpleProductCard
-                key={product.id}
-                product={product}
-                onAddToCart={handleAddToCart}
-                onToggleWishlist={handleToggleWishlist}
-                onClick={handleProductClick}
-                isWishlisted={wishlistedIds.has(product.id)}
-              />
-            ))}
+            {loading ? (
+              // Show loading skeleton
+              Array(4).fill(null).map((_, i) => (
+                <div key={i} className="animate-pulse">
+                  <div className="bg-gray-200 h-64 rounded-lg mb-4"></div>
+                  <div className="bg-gray-200 h-4 rounded mb-2"></div>
+                  <div className="bg-gray-200 h-4 rounded w-3/4"></div>
+                </div>
+              ))
+            ) : topProducts.length > 0 ? (
+              topProducts.map((product) => (
+                <SimpleProductCard
+                  key={product.id}
+                  product={product}
+                  onAddToCart={handleAddToCart}
+                  onToggleWishlist={handleToggleWishlist}
+                  onClick={handleProductClick}
+                  isWishlisted={wishlistedIds.has(product.id)}
+                />
+              ))
+            ) : (
+              // Show empty state
+              <div className="col-span-full text-center py-12">
+                <p className="text-gray-500">No products available at the moment</p>
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -149,16 +140,33 @@ export default function HomePage() {
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {Array(12).fill(null).map((_, i) => (
-              <SimpleProductCard
-                key={TEST_PRODUCTS[i % TEST_PRODUCTS.length].id + '-' + i}
-                product={TEST_PRODUCTS[i % TEST_PRODUCTS.length]}
-                onAddToCart={handleAddToCart}
-                onToggleWishlist={handleToggleWishlist}
-                onClick={handleProductClick}
-                isWishlisted={wishlistedIds.has(TEST_PRODUCTS[i % TEST_PRODUCTS.length].id)}
-              />
-            ))}
+            {loading ? (
+              // Show loading skeleton
+              Array(12).fill(null).map((_, i) => (
+                <div key={i} className="animate-pulse">
+                  <div className="bg-gray-200 h-64 rounded-lg mb-4"></div>
+                  <div className="bg-gray-200 h-4 rounded mb-2"></div>
+                  <div className="bg-gray-200 h-4 rounded w-3/4"></div>
+                </div>
+              ))
+            ) : topProducts.length > 0 ? (
+              // Show actual products (repeat to fill 12 slots)
+              Array(12).fill(null).map((_, i) => (
+                <SimpleProductCard
+                  key={topProducts[i % topProducts.length].id + '-' + i}
+                  product={topProducts[i % topProducts.length]}
+                  onAddToCart={handleAddToCart}
+                  onToggleWishlist={handleToggleWishlist}
+                  onClick={handleProductClick}
+                  isWishlisted={wishlistedIds.has(topProducts[i % topProducts.length].id)}
+                />
+              ))
+            ) : (
+              // Show empty state
+              <div className="col-span-full text-center py-12">
+                <p className="text-gray-500">No products available at the moment</p>
+              </div>
+            )}
           </div>
           <div className="text-center mt-12">
             <Link href="/products">
@@ -171,7 +179,7 @@ export default function HomePage() {
       </section>
 
       {/* Footer */}
-  <footer id="footer" className="relative bg-black/[0.96] text-white py-16 overflow-hidden">
+      <footer id="footer" className="relative bg-black/[0.96] text-white py-16 overflow-hidden">
         {/* Grid pattern background */}
         <div className="pointer-events-none absolute inset-0 [background-size:40px_40px] select-none [background-image:linear-gradient(to_right,#171717_1px,transparent_1px),linear-gradient(to_bottom,#171717_1px,transparent_1px)]" />
         
