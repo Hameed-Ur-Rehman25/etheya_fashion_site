@@ -25,29 +25,34 @@ export default function HomePage() {
   const [wishlistedIds, setWishlistedIds] = useState<Set<number>>(new Set())
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
   const [topProducts, setTopProducts] = useState<Product[]>([])
+  const [allProducts, setAllProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
 
-  // Fetch top products from Supabase on component mount
+  // Fetch products from Supabase on component mount
   useEffect(() => {
-    const fetchTopProducts = async () => {
+    const fetchProducts = async () => {
       try {
         const { data: supabaseProducts, error } = await DatabaseService.getProducts()
         if (error) {
           console.error('Error fetching products:', error)
           setTopProducts([])
+          setAllProducts([])
         } else if (supabaseProducts) {
-          // Use the first 4 products as top products
+          // Use the first 4 products for top section
           setTopProducts(supabaseProducts.slice(0, 4))
+          // Use the first 8 products for all products section
+          setAllProducts(supabaseProducts.slice(0, 8))
         }
       } catch (err) {
         console.error('Failed to fetch products:', err)
         setTopProducts([])
+        setAllProducts([])
       } finally {
         setLoading(false)
       }
     }
 
-    fetchTopProducts()
+    fetchProducts()
   }, [])
 
   const handleAddToCart = (product: Product) => {
@@ -140,25 +145,24 @@ export default function HomePage() {
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {loading ? (
-              // Show loading skeleton
-              Array(12).fill(null).map((_, i) => (
+                         {loading ? (
+               // Show loading skeleton
+               Array(8).fill(null).map((_, i) => (
                 <div key={i} className="animate-pulse">
                   <div className="bg-gray-200 h-64 rounded-lg mb-4"></div>
                   <div className="bg-gray-200 h-4 rounded mb-2"></div>
                   <div className="bg-gray-200 h-4 rounded w-3/4"></div>
                 </div>
               ))
-            ) : topProducts.length > 0 ? (
-              // Show actual products (repeat to fill 12 slots)
-              Array(12).fill(null).map((_, i) => (
+            ) : allProducts.length > 0 ? (
+              allProducts.map((product) => (
                 <SimpleProductCard
-                  key={topProducts[i % topProducts.length].id + '-' + i}
-                  product={topProducts[i % topProducts.length]}
+                  key={product.id}
+                  product={product}
                   onAddToCart={handleAddToCart}
                   onToggleWishlist={handleToggleWishlist}
                   onClick={handleProductClick}
-                  isWishlisted={wishlistedIds.has(topProducts[i % topProducts.length].id)}
+                  isWishlisted={wishlistedIds.has(product.id)}
                 />
               ))
             ) : (
