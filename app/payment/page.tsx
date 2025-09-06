@@ -82,46 +82,6 @@ export default function PaymentPage() {
     setIsProcessing(true);
     
     try {
-      // Test basic Supabase functionality first
-      console.log('Testing basic Supabase functionality...')
-      const basicTest = await DatabaseService.testBasicSupabase()
-      if (!basicTest.success) {
-        console.error('Basic Supabase test failed:', basicTest.error)
-        alert('Database connection failed. Please check your Supabase configuration.')
-        setIsProcessing(false)
-        return
-      }
-
-      // Test database connection first
-      console.log('Testing database connection...')
-      const connectionTest = await DatabaseService.testConnection()
-      if (!connectionTest.success) {
-        console.error('Database connection failed:', connectionTest.error)
-        alert('Database connection failed. Please try again later.')
-        setIsProcessing(false)
-        return
-      }
-
-      // Test if required tables exist
-      console.log('Testing table existence...')
-      const tableTest = await DatabaseService.testTablesExist()
-      console.log('Table test results:', tableTest)
-      
-      // Test table structure and permissions
-      console.log('Testing table structure...')
-      const structureTest = await DatabaseService.testTableStructure()
-      if (!structureTest.success) {
-        console.error('Table structure test failed:', structureTest.error)
-        alert('Table structure test failed. Please check your database setup.')
-        setIsProcessing(false)
-        return
-      }
-
-      // Test customer creation with minimal data
-      console.log('Testing customer creation...')
-      const customerTest = await DatabaseService.testCreateCustomer()
-      console.log('Customer test results:', customerTest)
-
       // Get delivery details from buy now order or localStorage for cart orders
       let deliveryDetails;
       if (isBuyNowMode && buyNowOrder?.deliveryDetails) {

@@ -19,7 +19,7 @@ import { ReviewsSection } from '@/components/reviews-section'
 import { Product } from '@/types'
 import { DatabaseService } from '@/lib/database-service'
 
-import { ProductCard } from '@/components/ProductCard'
+import { ProductCard } from '@/components/product-card'
 
 export default function HomePage() {
   const [wishlistedIds, setWishlistedIds] = useState<Set<number>>(new Set())
