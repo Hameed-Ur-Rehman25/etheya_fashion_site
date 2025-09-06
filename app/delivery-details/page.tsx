@@ -66,7 +66,7 @@ export default function DeliveryDetailsPage() {
     // Regular Cart Mode - show all cart items
     items = cart;
     subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-    shipping = items.length > 0 ? 100 : 0;
+    shipping = items.length > 0 ? 250 : 0;
     total = subtotal + shipping;
   }
 
@@ -375,7 +375,7 @@ export default function DeliveryDetailsPage() {
                 <h2 className="text-xl font-bold mt-8 mb-4 text-gray-900">Shipping Method</h2>
                 <div className="border rounded-lg px-4 py-3 bg-green-50 flex justify-between items-center">
                   <span className="text-gray-900">Standard Shipping</span>
-                  <span className="font-semibold text-gray-900">Rs. 100.00</span>
+                  <span className="font-semibold text-gray-900">Rs. 250.00</span>
                 </div>
                 
                 <Button

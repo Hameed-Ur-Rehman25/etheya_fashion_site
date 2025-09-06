@@ -62,7 +62,7 @@ export class OrderService {
 
       // Step 2: Calculate order totals
       const subtotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0)
-      const shippingCost = 100 // Fixed shipping cost
+      const shippingCost = 250 // Fixed shipping cost
       const total = subtotal + shippingCost
 
       // Step 3: Create order

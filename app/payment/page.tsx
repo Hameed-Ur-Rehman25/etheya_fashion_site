@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Upload, CreditCard, Banknote, Wallet, FileText, CheckCircle } from "lucide-react";
+import { Upload, CreditCard, Banknote, Wallet, FileText, CheckCircle, Truck } from "lucide-react";
 import { SuccessPopup } from "@/components/SuccessPopup";
 import OrderService from "@/lib/order-service";
 import DatabaseService from "@/lib/database-service";
@@ -57,7 +57,7 @@ export default function PaymentPage() {
     // Regular Cart Mode - show all cart items
     items = cart;
     subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-    shipping = items.length > 0 ? 100 : 0;
+    shipping = items.length > 0 ? 250 : 0;
     total = subtotal + shipping;
   }
 
@@ -74,7 +74,7 @@ export default function PaymentPage() {
       return;
     }
 
-    if (!proofOfPayment) {
+    if (selectedPaymentMethod !== 'cash-on-delivery' && !proofOfPayment) {
       alert('Please upload proof of payment');
       return;
     }
@@ -111,7 +111,9 @@ export default function PaymentPage() {
 
       // Upload payment proof to storage (you'll need to implement this)
       // For now, we'll use a placeholder URL
-      const paymentProofUrl = `payment_proof_${Date.now()}.jpg`;
+      const paymentProofUrl = selectedPaymentMethod === 'cash-on-delivery' 
+        ? undefined 
+        : `payment_proof_${Date.now()}.jpg`;
 
       // Create the order in the database
       let orderResult;
@@ -230,6 +232,17 @@ export default function PaymentPage() {
         { label: 'Account Title', value: 'Etheya Fashion' },
         { label: 'Account Type', value: 'Business Account' }
       ]
+    },
+    {
+      id: 'cash-on-delivery',
+      name: 'Cash on Delivery',
+      description: 'Pay when your order arrives',
+      icon: Truck,
+      details: [
+        { label: 'Payment Method', value: 'Cash on Delivery' },
+        { label: 'Payment Time', value: 'Upon delivery' },
+        { label: 'Additional Fee', value: 'No additional charges' }
+      ]
     }
   ];
 
@@ -319,7 +332,7 @@ export default function PaymentPage() {
               )}
 
               {/* Proof of Payment Upload */}
-              {selectedPaymentMethod && (
+              {selectedPaymentMethod && selectedPaymentMethod !== 'cash-on-delivery' && (
                 <Card>
                   <CardHeader>
                     <CardTitle className="text-xl font-bold text-gray-900">Proof of Payment</CardTitle>
@@ -383,19 +396,28 @@ export default function PaymentPage() {
               {/* Payment Button */}
               <Button
                 onClick={handleSubmitPayment}
-                disabled={!selectedPaymentMethod || !proofOfPayment || isProcessing}
+                disabled={!selectedPaymentMethod || (selectedPaymentMethod !== 'cash-on-delivery' && !proofOfPayment) || isProcessing}
                 size="lg"
                 className="w-full bg-gray-900 text-white hover:bg-gray-800 py-3 text-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isProcessing ? (
                   <div className="flex items-center space-x-2">
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    <span>Processing Payment...</span>
+                    <span>{selectedPaymentMethod === 'cash-on-delivery' ? 'Placing Order...' : 'Processing Payment...'}</span>
                   </div>
                 ) : (
                   <div className="flex items-center space-x-2">
-                    <CreditCard className="w-5 h-5" />
-                    <span>Complete Payment</span>
+                    {selectedPaymentMethod === 'cash-on-delivery' ? (
+                      <>
+                        <Truck className="w-5 h-5" />
+                        <span>Place Order</span>
+                      </>
+                    ) : (
+                      <>
+                        <CreditCard className="w-5 h-5" />
+                        <span>Complete Payment</span>
+                      </>
+                    )}
                   </div>
                 )}
               </Button>

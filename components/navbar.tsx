@@ -53,19 +53,7 @@ export function Navbar() {
                 <Link href="/products" className="text-gray-700 hover:text-gray-900 transition-colors font-happy-monkey text-base">
                   All Products
                 </Link>
-                <a
-                  href="#footer"
-                  className="text-gray-700 hover:text-gray-900 transition-colors font-happy-monkey text-base"
-                  onClick={e => {
-                    e.preventDefault();
-                    const footer = document.getElementById('footer');
-                    if (footer) {
-                      footer.scrollIntoView({ behavior: 'smooth' });
-                    }
-                  }}
-                >
-                  About
-                </a>
+
                 <a
                   href="#footer"
                   className="text-gray-700 hover:text-gray-900 transition-colors font-happy-monkey text-base"

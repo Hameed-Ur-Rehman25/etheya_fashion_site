@@ -85,7 +85,7 @@ export const BuyNowProvider = ({ children }: { children: ReactNode }) => {
     if (!buyNowOrder) return null;
     
     const subtotal = buyNowOrder.item.price * buyNowOrder.item.quantity;
-    const shipping = 100; // Fixed shipping cost
+    const shipping = 250; // Fixed shipping cost
     const total = subtotal + shipping;
     
     return { subtotal, shipping, total };
