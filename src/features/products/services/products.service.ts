@@ -185,31 +185,31 @@ export class ProductsService {
     return [
       {
         id: 1,
-        title: 'Unstitched Summer Embroidered Lawn Use-9250',
+        title: 'Festive Embroidered Lawn Suit',
         price: 'Rs. 6,250',
         image: '/assets/image1.png',
-        description: 'Beautiful embroidered lawn suit perfect for summer occasions.',
+        description: 'Beautiful embroidered lawn suit perfect for festive occasions.',
         sizes: ['S', 'M', 'L', 'XL'],
         images: ['/assets/image1.png', '/assets/image2.png'],
-        category: 'Unstitched',
+        category: 'Festive',
         inStock: true,
         featured: true
       },
       {
         id: 2,
-        title: 'Silk Formal Dress Collection',
+        title: 'Semi-Formal Silk Dress Collection',
         price: 'Rs. 12,500',
         image: '/assets/image2.png',
-        description: 'Elegant silk formal dress with intricate detailing.',
+        description: 'Elegant semi-formal silk dress with intricate detailing.',
         sizes: ['S', 'M', 'L', 'XL'],
         images: ['/assets/image2.png', '/assets/image3.jpeg'],
-        category: 'Formal',
+        category: 'Semi-Formal',
         inStock: true,
         featured: true
       },
       {
         id: 3,
-        title: 'Cotton Casual Wear Ensemble',
+        title: 'Casual Cotton Wear Ensemble',
         price: 'Rs. 4,200',
         image: '/assets/image3.jpeg',
         description: 'Comfortable cotton ensemble for everyday wear.',
@@ -218,6 +218,18 @@ export class ProductsService {
         category: 'Casual',
         inStock: true,
         featured: false
+      },
+      {
+        id: 4,
+        title: 'Executive Formal Blazer',
+        price: 'Rs. 15,000',
+        image: '/assets/image2.png',
+        description: 'Professional formal blazer for corporate events and meetings.',
+        sizes: ['S', 'M', 'L', 'XL'],
+        images: ['/assets/image2.png', '/assets/image3.jpeg'],
+        category: 'Formal',
+        inStock: true,
+        featured: true
       }
     ]
   }

@@ -49,6 +49,21 @@ export function ProductFilterSidebar({
     <div className="w-full max-w-xs bg-white border-r border-gray-200">
       <div className="p-4 space-y-3">
         
+        {/* Categories Filter */}
+  <CollapsibleFilter title="CATEGORIES" isOpen={true}>
+          {CATEGORIES.map((category) => (
+            <FilterCheckbox
+              key={category.id}
+              id={`category-${category.id}`}
+              label={category.title}
+              checked={filters.categories.includes(category.title)}
+              onCheckedChange={(checked) => 
+                handleArrayFilterChange('categories', category.title, checked)
+              }
+            />
+          ))}
+        </CollapsibleFilter>
+
         {/* Availability Filter */}
   <CollapsibleFilter title="AVAILABILITY" isOpen={false}>
           {AVAILABILITY_OPTIONS.map((option) => (
@@ -100,21 +115,6 @@ export function ProductFilterSidebar({
               checked={filters.fabrics.includes(option.value)}
               onCheckedChange={(checked) => 
                 handleArrayFilterChange('fabrics', option.value, checked)
-              }
-            />
-          ))}
-        </CollapsibleFilter>
-
-        {/* Categories Filter */}
-  <CollapsibleFilter title="CATEGORIES" isOpen={false}>
-          {CATEGORIES.map((category) => (
-            <FilterCheckbox
-              key={category.id}
-              id={`category-${category.id}`}
-              label={category.title}
-              checked={filters.categories.includes(category.title)}
-              onCheckedChange={(checked) => 
-                handleArrayFilterChange('categories', category.title, checked)
               }
             />
           ))}

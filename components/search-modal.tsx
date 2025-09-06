@@ -9,7 +9,7 @@ import Image from 'next/image'
 
 const searchResults = [
   { id: 1, title: 'Embroidered Lawn Suit', price: 'Rs. 7,560', image: '/placeholder.svg?height=100&width=100' },
-  { id: 2, title: 'Silk Formal Dress', price: 'Rs. 12,500', image: '/placeholder.svg?height=100&width=100' },
+  { id: 2, title: 'Semi-Formal Silk Dress', price: 'Rs. 12,500', image: '/placeholder.svg?height=100&width=100' },
   { id: 3, title: 'Cotton Kurta Set', price: 'Rs. 4,200', image: '/placeholder.svg?height=100&width=100' },
 ]
 
