@@ -51,3 +51,71 @@ export interface NavItem {
   href: string
   children?: NavItem[]
 }
+
+// Customer types based on backend schema
+export interface Customer {
+  id: string
+  email?: string
+  phone: string
+  first_name: string
+  last_name: string
+  address: string
+  apartment?: string
+  city: string
+  postal_code?: string
+  country: string
+  created_at: string
+}
+
+export interface CreateCustomerData {
+  email?: string
+  phone: string
+  first_name: string
+  last_name: string
+  address: string
+  apartment?: string
+  city: string
+  postal_code?: string
+  country: string
+}
+
+// Order types based on backend schema
+export interface Order {
+  id: string
+  customer_id: string
+  subtotal: number
+  shipping_cost: number
+  total: number
+  shipping_method: string
+  status: 'pending' | 'paid' | 'shipped' | 'delivered'
+  payment_proof_url?: string
+  created_at: string
+}
+
+export interface CreateOrderData {
+  customer_id: string
+  subtotal: number
+  shipping_cost: number
+  total: number
+  shipping_method?: string
+  status?: 'pending' | 'paid' | 'shipped' | 'delivered'
+  payment_proof_url?: string
+}
+
+// Order item types based on backend schema
+export interface OrderItem {
+  id: string
+  order_id: string
+  product_id: string
+  size: 'S' | 'M' | 'L' | 'XL'
+  quantity: number
+  price: number
+}
+
+export interface CreateOrderItemData {
+  order_id: string
+  product_id: string
+  size: 'S' | 'M' | 'L' | 'XL'
+  quantity: number
+  price: number
+}

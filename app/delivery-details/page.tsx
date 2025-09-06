@@ -125,19 +125,24 @@ export default function DeliveryDetailsPage() {
 
     setIsSubmitting(true);
     
+    const deliveryDetails = {
+      email: formData.email,
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+      country: formData.country,
+      address: formData.address,
+      city: formData.city,
+      phone: formData.phone,
+      apartment: formData.apartment,
+      postalCode: formData.postalCode
+    };
+    
     // Store delivery details in buy now order if in buy now mode
     if (isBuyNowMode && buyNowOrder) {
-      setDeliveryDetails({
-        email: formData.email,
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        country: formData.country,
-        address: formData.address,
-        city: formData.city,
-        phone: formData.phone,
-        apartment: formData.apartment,
-        postalCode: formData.postalCode
-      });
+      setDeliveryDetails(deliveryDetails);
+    } else {
+      // For cart mode, store delivery details in localStorage
+      localStorage.setItem('etheya-delivery-details', JSON.stringify(deliveryDetails));
     }
     
     // Simulate form submission

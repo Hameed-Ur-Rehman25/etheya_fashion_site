@@ -14,6 +14,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Upload, CreditCard, Banknote, Wallet, FileText, CheckCircle } from "lucide-react";
 import { SuccessPopup } from "@/components/SuccessPopup";
+import OrderService from "@/lib/order-service";
+import DatabaseService from "@/lib/database-service";
 
 export default function PaymentPage() {
   const { cart, clearCart } = useCartContext();
@@ -22,6 +24,8 @@ export default function PaymentPage() {
   const [proofOfPayment, setProofOfPayment] = useState<File | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const [debugInfo, setDebugInfo] = useState<string>('');
+  const [showDebug, setShowDebug] = useState(false);
 
   // Determine which items to show and calculate totals
   let items: CartItem[] = [];
@@ -78,16 +82,133 @@ export default function PaymentPage() {
     setIsProcessing(true);
     
     try {
-      // Simulate payment processing
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Test basic Supabase functionality first
+      console.log('Testing basic Supabase functionality...')
+      const basicTest = await DatabaseService.testBasicSupabase()
+      if (!basicTest.success) {
+        console.error('Basic Supabase test failed:', basicTest.error)
+        alert('Database connection failed. Please check your Supabase configuration.')
+        setIsProcessing(false)
+        return
+      }
+
+      // Test database connection first
+      console.log('Testing database connection...')
+      const connectionTest = await DatabaseService.testConnection()
+      if (!connectionTest.success) {
+        console.error('Database connection failed:', connectionTest.error)
+        alert('Database connection failed. Please try again later.')
+        setIsProcessing(false)
+        return
+      }
+
+      // Test if required tables exist
+      console.log('Testing table existence...')
+      const tableTest = await DatabaseService.testTablesExist()
+      console.log('Table test results:', tableTest)
       
-      // Don't clear buy now item here - keep it for the success popup
-      // It will be cleared when the success popup is closed
+      // Test table structure and permissions
+      console.log('Testing table structure...')
+      const structureTest = await DatabaseService.testTableStructure()
+      if (!structureTest.success) {
+        console.error('Table structure test failed:', structureTest.error)
+        alert('Table structure test failed. Please check your database setup.')
+        setIsProcessing(false)
+        return
+      }
+
+      // Test customer creation with minimal data
+      console.log('Testing customer creation...')
+      const customerTest = await DatabaseService.testCreateCustomer()
+      console.log('Customer test results:', customerTest)
+
+      // Get delivery details from buy now order or localStorage for cart orders
+      let deliveryDetails;
+      if (isBuyNowMode && buyNowOrder?.deliveryDetails) {
+        deliveryDetails = buyNowOrder.deliveryDetails;
+        console.log('Using buy now delivery details:', deliveryDetails);
+      } else {
+        // For cart mode, get delivery details from localStorage
+        const storedDeliveryDetails = localStorage.getItem('etheya-delivery-details');
+        if (!storedDeliveryDetails) {
+          alert('Please complete delivery details first');
+          setIsProcessing(false);
+          return;
+        }
+        deliveryDetails = JSON.parse(storedDeliveryDetails);
+        console.log('Using localStorage delivery details:', deliveryDetails);
+      }
       
-      // TODO: Implement actual payment logic
-      console.log('Payment processed successfully');
+      // Validate delivery details
+      if (!deliveryDetails || !deliveryDetails.firstName || !deliveryDetails.lastName || 
+          !deliveryDetails.phone || !deliveryDetails.address || !deliveryDetails.city || 
+          !deliveryDetails.country) {
+        console.error('Invalid delivery details:', deliveryDetails);
+        alert('Invalid delivery details. Please complete the delivery form again.');
+        setIsProcessing(false);
+        return;
+      }
+
+      // Upload payment proof to storage (you'll need to implement this)
+      // For now, we'll use a placeholder URL
+      const paymentProofUrl = `payment_proof_${Date.now()}.jpg`;
+
+      // Create the order in the database
+      let orderResult;
+      if (isBuyNowMode && buyNowOrder) {
+        // Single item order
+        const singleItem: CartItem = {
+          product: buyNowOrder.item.product,
+          quantity: buyNowOrder.item.quantity,
+          selectedSize: buyNowOrder.item.selectedSize,
+          price: buyNowOrder.item.price
+        };
+        console.log('Creating single item order with:', { deliveryDetails, singleItem, paymentProofUrl });
+        orderResult = await OrderService.createSingleItemOrder(
+          deliveryDetails,
+          singleItem,
+          paymentProofUrl
+        );
+      } else {
+        // Cart order
+        console.log('=== PAYMENT FLOW DEBUG ===');
+        console.log('Delivery details:', deliveryDetails);
+        console.log('Cart items:', cart);
+        console.log('Cart items count:', cart.length);
+        console.log('Payment proof URL:', paymentProofUrl);
+        
+        // Log each cart item in detail
+        cart.forEach((item, index) => {
+          console.log(`Cart item ${index + 1}:`, {
+            product: item.product,
+            productId: item.product.id,
+            quantity: item.quantity,
+            selectedSize: item.selectedSize,
+            price: item.price
+          });
+        });
+        
+        console.log('Calling OrderService.createCompleteOrder...');
+        orderResult = await OrderService.createCompleteOrder(
+          deliveryDetails,
+          cart,
+          paymentProofUrl
+        );
+        console.log('OrderService result:', orderResult);
+      }
+
+      if (orderResult.error) {
+        console.error('=== ORDER CREATION FAILED ===');
+        console.error('Order result error:', orderResult.error);
+        console.error('Order result details:', orderResult);
+        console.error('=== END ORDER CREATION ERROR ===');
+        alert('Failed to create order. Please try again.');
+        return;
+      }
+
+      console.log('Order created successfully:', orderResult);
       
-      // Show success popup instead of alert
+      // Show success popup
       setShowSuccessPopup(true);
       
     } catch (error) {
@@ -104,9 +225,10 @@ export default function PaymentPage() {
       clearBuyNowOrder();
     }
     
-    // Clear cart if in regular mode
+    // Clear cart and delivery details if in regular mode
     if (!isBuyNowMode) {
       clearCart();
+      localStorage.removeItem('etheya-delivery-details');
     }
     
     setShowSuccessPopup(false);
