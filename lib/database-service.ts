@@ -304,6 +304,57 @@ export class DatabaseService {
     }
   }
 
+  // Get categories with images from dedicated categories table
+  static async getCategoriesWithImages() {
+    try {
+      const { data: categories, error } = await supabase
+        .from('categories')
+        .select('*')
+        .eq('is_active', true)
+        .order('order_index', { ascending: true })
+
+      if (error) {
+        console.error('Error fetching categories with images:', {
+          message: error.message,
+          code: error.code,
+          details: error.details,
+          hint: error.hint
+        })
+        
+        // If table doesn't exist (code 42P01), fall back to product-based categories
+        if (error.code === '42P01') {
+          console.warn('Categories table does not exist, falling back to product-based categories')
+          return this.getCategories()
+        }
+        
+        return { data: null, error }
+      }
+
+      if (!categories || categories.length === 0) {
+        console.warn('No categories found in categories table, falling back to product-based categories')
+        return this.getCategories()
+      }
+
+      // Transform categories to match the expected format
+      const transformedCategories = categories.map(category => ({
+        id: category.id,
+        title: category.title,
+        description: category.description || `${category.title} collection`,
+        slug: category.slug,
+        image: category.image_url || '/assets/placeholder.jpg',
+        productCount: 0, // We'll calculate this separately if needed
+        featured: true
+      }))
+
+      return { data: transformedCategories, error: null }
+    } catch (error) {
+      console.error('Unexpected error getting categories with images:', error)
+      // Fall back to product-based categories on any unexpected error
+      console.warn('Falling back to product-based categories due to unexpected error')
+      return this.getCategories()
+    }
+  }
+
   static async getCategoryBySlug(slug: string) {
     try {
       const { data: categories, error } = await supabase

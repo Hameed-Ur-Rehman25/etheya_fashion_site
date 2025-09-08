@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 
 // Hero data interface and configuration
@@ -100,12 +101,14 @@ export function HeroSection() {
               {displayImage.subtitle}
             </p>
             
-            <Button
-              size="lg"
-              className="fill-button bg-transparent border-2 border-black text-black px-8 py-3 text-lg font-medium transition-all duration-300"
-            >
-              {displayImage.buttonText}
-            </Button>
+            <Link href="/products">
+              <Button
+                size="lg"
+                className="fill-button bg-transparent border-2 border-black text-black px-8 py-3 text-lg font-medium transition-all duration-300"
+              >
+                {displayImage.buttonText}
+              </Button>
+            </Link>
           </div>
         ) : (
           // Client version - with animations
@@ -120,12 +123,14 @@ export function HeroSection() {
               {displayImage.subtitle}
             </p>
             
-            <Button
-              size="lg"
-              className="fill-button bg-transparent border-2 border-black text-black px-8 py-3 text-lg font-medium transition-all duration-300 transform hover:scale-105 animate-fade-in-up"
-            >
-              {displayImage.buttonText}
-            </Button>
+            <Link href="/products">
+              <Button
+                size="lg"
+                className="fill-button bg-transparent border-2 border-black text-black px-8 py-3 text-lg font-medium transition-all duration-300 transform hover:scale-105 animate-fade-in-up"
+              >
+                {displayImage.buttonText}
+              </Button>
+            </Link>
           </div>
         )}
       </div>

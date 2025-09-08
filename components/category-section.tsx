@@ -2,17 +2,96 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
+import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { SectionContainer } from './section-container'
+import { DatabaseService } from '@/lib/database-service'
 import { CATEGORIES } from '@/lib/constants'
 
+interface Category {
+  id: string
+  title: string
+  description: string
+  slug: string
+  image: string
+  productCount?: number
+  featured?: boolean
+}
+
 export function CategorySection() {
+  const [categories, setCategories] = useState<Category[]>(CATEGORIES)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        setLoading(true)
+        setError(null)
+        const { data, error } = await DatabaseService.getCategoriesWithImages()
+        
+        if (error) {
+          console.error('Error fetching categories:', error)
+          // Check if it's a table not found error
+          if (error.code === '42P01') {
+            setError('Categories table not found - using default categories')
+          } else {
+            setError('Failed to load categories from database')
+          }
+          // Keep using fallback categories from constants
+          setCategories(CATEGORIES)
+        } else if (data && data.length > 0) {
+          setCategories(data)
+          setError(null)
+        } else {
+          // Fallback to constants if no data
+          setError('No categories found - using default categories')
+          setCategories(CATEGORIES)
+        }
+      } catch (err) {
+        console.error('Unexpected error fetching categories:', err)
+        setError('Unexpected error - using default categories')
+        setCategories(CATEGORIES)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchCategories()
+  }, [])
+
+  if (loading) {
+    return (
+      <SectionContainer padding="xl">
+        <div className="text-center mb-16">
+          <h2 className="text-3xl md:text-4xl font-playfair font-bold text-gray-900 mb-4">
+            Shop by Category
+          </h2>
+        </div>
+        
+        {/* Loading skeleton */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {Array(4).fill(null).map((_, i) => (
+            <div key={i} className="animate-pulse">
+              <div className="bg-gray-200 h-80 rounded-lg"></div>
+            </div>
+          ))}
+        </div>
+      </SectionContainer>
+    )
+  }
+
   return (
     <SectionContainer padding="xl">
       <div className="text-center mb-16">
         <h2 className="text-3xl md:text-4xl font-playfair font-bold text-gray-900 mb-4">
           Shop by Category
         </h2>
+        {error && (
+          <p className="text-sm text-amber-600 mb-4">
+            {error} - Showing default categories
+          </p>
+        )}
         {/* <p className="text-gray-600 max-w-2xl mx-auto">
           Explore our diverse collection of premium fashion categories, 
           each crafted with attention to detail and style
@@ -20,7 +99,7 @@ export function CategorySection() {
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-        {CATEGORIES.map((category) => (
+        {categories.map((category) => (
           <div
             key={category.id}
             className="group cursor-pointer transform transition-all duration-300 hover:-translate-y-2 hover:shadow-xl"
@@ -32,6 +111,11 @@ export function CategorySection() {
                 width={300}
                 height={650}
                 className="object-cover w-full h-110 group-hover:scale-105 transition-transform duration-500"
+                onError={(e) => {
+                  // Fallback to placeholder if image fails to load
+                  const target = e.target as HTMLImageElement
+                  target.src = "/placeholder.svg"
+                }}
               />
               
               {/* Overlay */}
