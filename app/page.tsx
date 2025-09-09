@@ -1,7 +1,7 @@
 
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -13,66 +13,25 @@ import { CategorySection } from '@/components/category-section'
 import { NewArrivalsCarousel } from '@/components/new-arrivals-carousel'
 import { SimpleProductGrid } from '@/components/simple-product-grid'
 import { SimpleProductCard } from '@/components/simple-product-card'
+import { ProductModal } from '@/components/product-modal'
 import { Spotlight } from "@/components/ui/spotlight"
 import { ReviewsSection } from '@/components/reviews-section'
 import { Product } from '@/types'
+import { useProductCache } from '@/context/ProductCacheContext'
 
-import { ProductCard } from '@/components/ProductCard'
-
-// Test products data
-const TEST_PRODUCTS: Product[] = [
-  {
-    id: 1,
-    title: 'Unstitched Summer Embroidered Lawn Use-9250',
-    price: 'Rs. 6,250',
-    image: '/assets/image1.png',
-    description: 'Beautiful embroidered lawn suit perfect for summer occasions.',
-    sizes: ['S', 'M', 'L', 'XL'],
-    images: ['/assets/image1.png', '/assets/image2.png'],
-    category: 'Unstitched',
-    inStock: true,
-    featured: true
-  },
-  {
-    id: 2,
-    title: 'Silk Formal Dress Collection',
-    price: 'Rs. 12,500',
-    image: '/assets/image2.png',
-    description: 'Elegant silk formal dress with intricate detailing.',
-    sizes: ['S', 'M', 'L', 'XL'],
-    images: ['/assets/image2.png', '/assets/image3.jpeg'],
-    category: 'Formal',
-    inStock: true,
-    featured: true
-  },
-  {
-    id: 3,
-    title: 'Cotton Casual Wear Ensemble',
-    price: 'Rs. 4,200',
-    image: '/assets/image3.jpeg',
-    description: 'Comfortable cotton casual wear for everyday use.',
-    sizes: ['S', 'M', 'L', 'XL'],
-    images: ['/assets/image3.jpeg', '/assets/image1.png'],
-    category: 'Ready to Wear',
-    inStock: true,
-    featured: false
-  },
-  {
-    id: 4,
-    title: 'Designer Party Wear Premium',
-    price: 'Rs. 18,000',
-    image: '/assets/image.png',
-    description: 'Stunning designer party wear with premium fabric.',
-    sizes: ['S', 'M', 'L', 'XL'],
-    images: ['/assets/image.png', '/assets/image2.png'],
-    category: 'Luxury Lawn',
-    inStock: true,
-    featured: true
-  }
-]
+import { ProductCard } from '@/components/product-card'
 
 export default function HomePage() {
   const [wishlistedIds, setWishlistedIds] = useState<Set<number>>(new Set())
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
+  
+  // Use cached products
+  const { products, loading, getFeaturedProducts } = useProductCache()
+  
+  // Get featured products for top section, fallback to first 4 products
+  const featuredProducts = getFeaturedProducts()
+  const topProducts = featuredProducts.length > 0 ? featuredProducts.slice(0, 4) : products.slice(0, 4)
+  const allProducts = products.slice(0, 8)
 
   const handleAddToCart = (product: Product) => {
     console.log('Add to cart:', product.title)
@@ -91,6 +50,12 @@ export default function HomePage() {
       return newSet
     })
   }
+
+  const handleProductClick = (product: Product) => {
+    console.log('Opening product modal for:', product.title)
+    setSelectedProduct(product)
+  }
+
   return (
     <div className="min-h-screen bg-white">
       <Navbar />
@@ -100,28 +65,44 @@ export default function HomePage() {
         <NewArrivalsCarousel />
       </main>
 
-      {/* This Week Top 4 */}
-      <section className="py-16 px-6 bg-white">
+      {/* This Week Top 4 - mobile: horizontal scroll, desktop: grid */}
+      <section className="py-12 md:py-16 px-2 md:px-6 bg-white">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-playfair font-bold text-gray-900 mb-4">
+          <div className="text-center mb-8 md:mb-12">
+            <h2 className="text-2xl md:text-4xl font-playfair font-bold text-gray-900 mb-3 md:mb-4">
               This Week's Top 4
             </h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
+            <p className="text-gray-600 max-w-md md:max-w-2xl mx-auto text-sm md:text-base">
               Discover our most popular pieces this week, handpicked by fashion enthusiasts
             </p>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {TEST_PRODUCTS.slice(0, 4).map((product) => (
-              <SimpleProductCard
-                key={product.id}
-                product={product}
-                onAddToCart={handleAddToCart}
-                onToggleWishlist={handleToggleWishlist}
-                isWishlisted={wishlistedIds.has(product.id)}
-              />
-            ))}
+          {/* Mobile: horizontal scroll, Desktop: grid */}
+          <div className="flex md:grid md:grid-cols-2 lg:grid-cols-4 gap-9 md:gap-8 overflow-x-auto scrollbar-hide pb-2">
+            {loading ? (
+              Array(4).fill(null).map((_, i) => (
+                <div key={i} className="animate-pulse min-w-[220px] md:min-w-0">
+                  <div className="bg-gray-200 h-64 rounded-lg mb-4"></div>
+                  <div className="bg-gray-200 h-4 rounded mb-2"></div>
+                  <div className="bg-gray-200 h-4 rounded w-3/4"></div>
+                </div>
+              ))
+            ) : topProducts.length > 0 ? (
+              topProducts.map((product) => (
+                <div key={product.id} className="min-w-[220px] md:min-w-0">
+                  <SimpleProductCard
+                    product={product}
+                    onAddToCart={handleAddToCart}
+                    onToggleWishlist={handleToggleWishlist}
+                    onClick={handleProductClick}
+                    isWishlisted={wishlistedIds.has(product.id)}
+                  />
+                </div>
+              ))
+            ) : (
+              <div className="w-full text-center py-12">
+                <p className="text-gray-500">No products available at the moment</p>
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -130,9 +111,9 @@ export default function HomePage() {
       <ReviewsSection />
 
       {/* All Products Section */}
-      <section className="py-16 px-6 bg-white">
+      <section className="py-12 md:py-16 px-6 bg-white">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
+          <div className="text-center mb-8 md:mb-12">
             <h2 className="text-3xl md:text-4xl font-playfair font-bold text-gray-900 mb-4">
               All Products
             </h2>
@@ -140,13 +121,34 @@ export default function HomePage() {
               Discover our complete collection of premium fashion pieces
             </p>
           </div>
-          <SimpleProductGrid
-            products={TEST_PRODUCTS}
-            columns={4}
-            onAddToCart={handleAddToCart}
-            onToggleWishlist={handleToggleWishlist}
-            wishlistedIds={wishlistedIds}
-          />
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
+                         {loading ? (
+               // Show loading skeleton
+               Array(8).fill(null).map((_, i) => (
+                <div key={i} className="animate-pulse">
+                  <div className="bg-gray-200 h-48 sm:h-64 rounded-lg mb-2 sm:mb-4"></div>
+                  <div className="bg-gray-200 h-3 sm:h-4 rounded mb-1 sm:mb-2"></div>
+                  <div className="bg-gray-200 h-3 sm:h-4 rounded w-3/4"></div>
+                </div>
+              ))
+            ) : allProducts.length > 0 ? (
+              allProducts.map((product) => (
+                <SimpleProductCard
+                  key={product.id}
+                  product={product}
+                  onAddToCart={handleAddToCart}
+                  onToggleWishlist={handleToggleWishlist}
+                  onClick={handleProductClick}
+                  isWishlisted={wishlistedIds.has(product.id)}
+                />
+              ))
+            ) : (
+              // Show empty state
+              <div className="col-span-full text-center py-12">
+                <p className="text-gray-500">No products available at the moment</p>
+              </div>
+            )}
+          </div>
           <div className="text-center mt-12">
             <Link href="/products">
               <Button className="bg-black text-white hover:bg-gray-800 px-8 py-3">
@@ -158,7 +160,7 @@ export default function HomePage() {
       </section>
 
       {/* Footer */}
-      <footer className="relative bg-black/[0.96] text-white py-16 overflow-hidden">
+      <footer id="footer" className="relative bg-black/[0.96] text-white py-16 overflow-hidden">
         {/* Grid pattern background */}
         <div className="pointer-events-none absolute inset-0 [background-size:40px_40px] select-none [background-image:linear-gradient(to_right,#171717_1px,transparent_1px),linear-gradient(to_bottom,#171717_1px,transparent_1px)]" />
         
@@ -215,6 +217,13 @@ export default function HomePage() {
           </div>
         </div>
       </footer>
+
+      {/* Product Modal */}
+      <ProductModal
+        product={selectedProduct}
+        isOpen={!!selectedProduct}
+        onClose={() => setSelectedProduct(null)}
+      />
     </div>
   )
 }

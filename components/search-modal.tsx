@@ -2,14 +2,14 @@
 
 import { useState, useEffect } from 'react'
 import { Search, X } from 'lucide-react'
-import { Button } from '@/shared/components/ui/button'
-import { Input } from '@/shared/components/ui/input'
-import { Dialog, DialogContent } from '@/shared/components/ui/dialog'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
 import Image from 'next/image'
 
 const searchResults = [
   { id: 1, title: 'Embroidered Lawn Suit', price: 'Rs. 7,560', image: '/placeholder.svg?height=100&width=100' },
-  { id: 2, title: 'Silk Formal Dress', price: 'Rs. 12,500', image: '/placeholder.svg?height=100&width=100' },
+  { id: 2, title: 'Semi-Formal Silk Dress', price: 'Rs. 12,500', image: '/placeholder.svg?height=100&width=100' },
   { id: 3, title: 'Cotton Kurta Set', price: 'Rs. 4,200', image: '/placeholder.svg?height=100&width=100' },
 ]
 
@@ -38,7 +38,7 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
       <DialogContent className="max-w-2xl p-0 top-20">
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-playfair font-bold">Search Products</h2>
+            <DialogTitle className="text-xl font-playfair font-bold">Search Products</DialogTitle>
             <Button variant="ghost" size="icon" onClick={onClose}>
               <X className="w-5 h-5" />
             </Button>
@@ -50,7 +50,7 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
               type="text"
               placeholder="Search for products..."
               value={searchQuery}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
+              onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10 pr-4 py-3 text-lg"
               autoFocus
             />

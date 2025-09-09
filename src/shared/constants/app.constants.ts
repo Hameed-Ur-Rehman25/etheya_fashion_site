@@ -51,7 +51,7 @@ export const PRICE_RANGES = {
 export const NAVIGATION_ITEMS = [
   { label: 'Home', href: '/' },
   { label: 'Products', href: '/products' },
-  { label: 'Categories', href: '/categories' },
+  { label: 'Categories', href: '/products' },
   { label: 'About', href: '/about' },
   { label: 'Contact', href: '/contact' }
 ] as const
