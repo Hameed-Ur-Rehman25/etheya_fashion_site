@@ -157,6 +157,8 @@ export const CATEGORIES: Category[] = [
 export const SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL']
 export const COLORS = ['Black', 'White', 'Red', 'Blue', 'Green', 'Pink', 'Purple', 'Yellow']
 
+export const SUB_CATEGORIES = ['GenZ', 'Jhalak', 'Sada']
+
 export const AVAILABILITY_OPTIONS = [
   { value: 'in-stock', label: 'In Stock' },
   { value: 'out-of-stock', label: 'Out of Stock' },

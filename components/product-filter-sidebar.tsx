@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { SearchFilters } from '@/types'
 import { 
   CATEGORIES, 
+  SUB_CATEGORIES,
   SIZES, 
   AVAILABILITY_OPTIONS, 
   TYPE_OPTIONS, 
@@ -33,7 +34,7 @@ export function ProductFilterSidebar({
   }
 
   const handleArrayFilterChange = (
-    key: 'categories' | 'sizes' | 'availability' | 'types' | 'fabrics' | 'pieces',
+    key: 'categories' | 'subCategories' | 'sizes' | 'availability' | 'types' | 'fabrics' | 'pieces',
     item: string,
     checked: boolean
   ) => {
@@ -63,6 +64,23 @@ export function ProductFilterSidebar({
             />
           ))}
         </CollapsibleFilter>
+
+        {/* Sub-Categories Filter - Only show when categories are selected */}
+        {filters.categories.length > 0 && (
+          <CollapsibleFilter title="SUB-CATEGORIES" isOpen={true}>
+            {SUB_CATEGORIES.map((subCategory) => (
+              <FilterCheckbox
+                key={subCategory}
+                id={`subcategory-${subCategory}`}
+                label={subCategory}
+                checked={filters.subCategories.includes(subCategory)}
+                onCheckedChange={(checked) => 
+                  handleArrayFilterChange('subCategories', subCategory, checked)
+                }
+              />
+            ))}
+          </CollapsibleFilter>
+        )}
 
         {/* Availability Filter */}
   <CollapsibleFilter title="AVAILABILITY" isOpen={false}>

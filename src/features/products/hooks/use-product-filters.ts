@@ -9,6 +9,7 @@ interface UseProductFiltersOptions {
 export function useProductFilters(options: UseProductFiltersOptions = {}) {
   const [filters, setFilters] = useState<SearchFilters>({
     categories: [],
+    subCategories: [],
     sizes: [],
     priceRange: [0, 50000],
     sortBy: 'newest',
@@ -22,6 +23,18 @@ export function useProductFilters(options: UseProductFiltersOptions = {}) {
         : prev.categories.filter(c => c !== category)
       
       const newFilters = { ...prev, categories: newCategories }
+      options.onFiltersChange?.(newFilters)
+      return newFilters
+    })
+  }, [options])
+
+  const updateSubCategory = useCallback((subCategory: string, checked: boolean) => {
+    setFilters(prev => {
+      const newSubCategories = checked
+        ? [...prev.subCategories, subCategory]
+        : prev.subCategories.filter(sc => sc !== subCategory)
+      
+      const newFilters = { ...prev, subCategories: newSubCategories }
       options.onFiltersChange?.(newFilters)
       return newFilters
     })
@@ -66,6 +79,7 @@ export function useProductFilters(options: UseProductFiltersOptions = {}) {
   const clearAllFilters = useCallback(() => {
     const clearedFilters: SearchFilters = {
       categories: [],
+      subCategories: [],
       sizes: [],
       priceRange: [0, 50000],
       sortBy: 'newest'
@@ -77,6 +91,7 @@ export function useProductFilters(options: UseProductFiltersOptions = {}) {
   const hasActiveFilters = useCallback(() => {
     return (
       filters.categories.length > 0 ||
+      filters.subCategories.length > 0 ||
       filters.sizes.length > 0 ||
       filters.priceRange[0] > 0 ||
       filters.priceRange[1] < 50000
@@ -86,6 +101,7 @@ export function useProductFilters(options: UseProductFiltersOptions = {}) {
   const getActiveFiltersCount = useCallback(() => {
     let count = 0
     if (filters.categories.length > 0) count++
+    if (filters.subCategories.length > 0) count++
     if (filters.sizes.length > 0) count++
     if (filters.priceRange[0] > 0 || filters.priceRange[1] < 50000) count++
     return count
@@ -94,6 +110,7 @@ export function useProductFilters(options: UseProductFiltersOptions = {}) {
   return {
     filters,
     updateCategory,
+    updateSubCategory,
     updateSize,
     updatePriceRange,
     updateSortBy,

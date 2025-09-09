@@ -11,6 +11,7 @@ export const PRODUCTS: Product[] = [
     sizes: ['S', 'M', 'L', 'XL'],
     images: ['/assets/image1.png', '/assets/image2.png'],
     category: 'Festive',
+    subCategory: 'GenZ',
     inStock: true,
     featured: true
   },
@@ -23,6 +24,7 @@ export const PRODUCTS: Product[] = [
     sizes: ['S', 'M', 'L', 'XL'],
     images: ['/assets/image2.png', '/assets/image3.jpeg'],
     category: 'Semi-Formal',
+    subCategory: 'Jhalak',
     inStock: true,
     featured: true
   },
@@ -35,6 +37,7 @@ export const PRODUCTS: Product[] = [
     sizes: ['S', 'M', 'L', 'XL'],
     images: ['/assets/image3.jpeg', '/assets/image1.png'],
     category: 'Casual',
+    subCategory: 'Sada',
     inStock: true,
     featured: false
   },
@@ -47,6 +50,7 @@ export const PRODUCTS: Product[] = [
     sizes: ['S', 'M', 'L', 'XL'],
     images: ['/assets/image.png', '/assets/image2.png'],
     category: 'Festive',
+    subCategory: 'Jhalak',
     inStock: true,
     featured: true
   },
@@ -59,6 +63,7 @@ export const PRODUCTS: Product[] = [
     sizes: ['S', 'M', 'L', 'XL'],
     images: ['/assets/image3.jpeg', '/assets/image1.png'],
     category: 'Semi-Formal',
+    subCategory: 'Sada',
     inStock: true,
     featured: false
   },
@@ -71,6 +76,7 @@ export const PRODUCTS: Product[] = [
     sizes: ['S', 'M', 'L', 'XL'],
     images: ['/assets/image1.png', '/assets/image2.png'],
     category: 'Festive',
+    subCategory: 'Sada',
     inStock: true,
     featured: true
   },
@@ -83,6 +89,7 @@ export const PRODUCTS: Product[] = [
     sizes: ['S', 'M', 'L', 'XL'],
     images: ['/assets/image2.png', '/assets/image3.jpeg'],
     category: 'Casual',
+    subCategory: 'GenZ',
     inStock: true,
     featured: false
   },
@@ -95,6 +102,7 @@ export const PRODUCTS: Product[] = [
     sizes: ['S', 'M', 'L', 'XL'],
     images: ['/assets/image.png', '/assets/image1.png'],
     category: 'Semi-Formal',
+    subCategory: 'GenZ',
     inStock: false,
     featured: false
   },
@@ -107,6 +115,7 @@ export const PRODUCTS: Product[] = [
     sizes: ['S', 'M', 'L', 'XL'],
     images: ['/assets/image2.png', '/assets/image3.jpeg'],
     category: 'Festive',
+    subCategory: 'Jhalak',
     inStock: true,
     featured: true
   },
@@ -119,6 +128,7 @@ export const PRODUCTS: Product[] = [
     sizes: ['S', 'M', 'L', 'XL', 'XXL'],
     images: ['/assets/image1.png', '/assets/image.png'],
     category: 'Casual',
+    subCategory: 'Sada',
     inStock: true,
     featured: false
   },
@@ -131,6 +141,7 @@ export const PRODUCTS: Product[] = [
     sizes: ['One Size'],
     images: ['/assets/image3.jpeg', '/assets/image2.png'],
     category: 'Festive',
+    subCategory: 'Sada',
     inStock: true,
     featured: true
   },
@@ -143,6 +154,7 @@ export const PRODUCTS: Product[] = [
     sizes: ['S', 'M', 'L', 'XL'],
     images: ['/assets/image.png', '/assets/image1.png'],
     category: 'Casual',
+    subCategory: 'GenZ',
     inStock: true,
     featured: false
   },
@@ -155,6 +167,7 @@ export const PRODUCTS: Product[] = [
     sizes: ['S', 'M', 'L', 'XL'],
     images: ['/assets/image1.png', '/assets/image3.jpeg'],
     category: 'Casual',
+    subCategory: 'Jhalak',
     inStock: true,
     featured: true
   },
@@ -167,6 +180,7 @@ export const PRODUCTS: Product[] = [
     sizes: ['One Size'],
     images: ['/assets/image2.png', '/assets/image.png'],
     category: 'Semi-Formal',
+    subCategory: 'Jhalak',
     inStock: true,
     featured: false
   },
@@ -179,6 +193,7 @@ export const PRODUCTS: Product[] = [
     sizes: ['S', 'M', 'L', 'XL'],
     images: ['/assets/image3.jpeg', '/assets/image1.png'],
     category: 'Festive',
+    subCategory: 'GenZ',
     inStock: true,
     featured: true
   },
@@ -191,6 +206,7 @@ export const PRODUCTS: Product[] = [
     sizes: ['One Size'],
     images: ['/assets/image.png', '/assets/image2.png'],
     category: 'Semi-Formal',
+    subCategory: 'Sada',
     inStock: true,
     featured: false
   },
@@ -203,6 +219,7 @@ export const PRODUCTS: Product[] = [
     sizes: ['S', 'M', 'L', 'XL'],
     images: ['/assets/image1.png', '/assets/image3.jpeg'],
     category: 'Festive',
+    subCategory: 'Jhalak',
     inStock: true,
     featured: true
   },
@@ -215,6 +232,7 @@ export const PRODUCTS: Product[] = [
     sizes: ['S', 'M', 'L', 'XL'],
     images: ['/assets/image2.png', '/assets/image.png'],
     category: 'Semi-Formal',
+    subCategory: 'GenZ',
     inStock: true,
     featured: false
   },
@@ -227,6 +245,7 @@ export const PRODUCTS: Product[] = [
     sizes: ['S', 'M', 'L', 'XL'],
     images: ['/assets/image3.jpeg', '/assets/image2.png'],
     category: 'Festive',
+    subCategory: 'Sada',
     inStock: true,
     featured: true
   },
@@ -239,6 +258,7 @@ export const PRODUCTS: Product[] = [
     sizes: ['S', 'M', 'L', 'XL', 'XXL'],
     images: ['/assets/image.png', '/assets/image1.png'],
     category: 'Casual',
+    subCategory: 'Jhalak',
     inStock: true,
     featured: false
   },
@@ -251,6 +271,7 @@ export const PRODUCTS: Product[] = [
     sizes: ['One Size'],
     images: ['/assets/image1.png', '/assets/image2.png'],
     category: 'Semi-Formal',
+    subCategory: 'Jhalak',
     inStock: true,
     featured: false
   },
@@ -263,6 +284,7 @@ export const PRODUCTS: Product[] = [
     sizes: ['S', 'M', 'L', 'XL'],
     images: ['/assets/image2.png', '/assets/image3.jpeg'],
     category: 'Festive',
+    subCategory: 'GenZ',
     inStock: true,
     featured: true
   },
@@ -275,6 +297,7 @@ export const PRODUCTS: Product[] = [
     sizes: ['S', 'M', 'L', 'XL'],
     images: ['/assets/image3.jpeg', '/assets/image.png'],
     category: 'Casual',
+    subCategory: 'Sada',
     inStock: true,
     featured: false
   },
@@ -287,6 +310,7 @@ export const PRODUCTS: Product[] = [
     sizes: ['S', 'M', 'L', 'XL'],
     images: ['/assets/image.png', '/assets/image1.png'],
     category: 'Festive',
+    subCategory: 'Jhalak',
     inStock: true,
     featured: true
   },
@@ -299,6 +323,7 @@ export const PRODUCTS: Product[] = [
     sizes: ['S', 'M', 'L', 'XL'],
     images: ['/assets/image2.png', '/assets/image3.jpeg'],
     category: 'Formal',
+    subCategory: 'GenZ',
     inStock: true,
     featured: true
   },
@@ -311,6 +336,7 @@ export const PRODUCTS: Product[] = [
     sizes: ['S', 'M', 'L', 'XL'],
     images: ['/assets/image3.jpeg', '/assets/image1.png'],
     category: 'Formal',
+    subCategory: 'Jhalak',
     inStock: true,
     featured: false
   },
@@ -323,6 +349,7 @@ export const PRODUCTS: Product[] = [
     sizes: ['S', 'M', 'L', 'XL'],
     images: ['/assets/image1.png', '/assets/image2.png'],
     category: 'Formal',
+    subCategory: 'Sada',
     inStock: true,
     featured: true
   }

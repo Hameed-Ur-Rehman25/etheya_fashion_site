@@ -17,6 +17,7 @@ export function useProducts(options: UseProductsOptions = {}) {
   const [filters, setFilters] = useState<SearchFilters>(
     options.initialFilters || {
       categories: [],
+      subCategories: [],
       sizes: [],
       availability: [],
       types: [],
@@ -56,16 +57,38 @@ export function useProducts(options: UseProductsOptions = {}) {
     setError(null)
     
     try {
-      const { data: supabaseProducts, error: supabaseError } = await DatabaseService.getProducts()
-      
-      if (supabaseError) {
-        throw new Error(supabaseError.message)
-      }
-      
-      if (supabaseProducts) {
-        setProducts(supabaseProducts)
+      // Use the new filtering method if we have active filters
+      if (filters.categories.length > 0 || filters.subCategories.length > 0 || 
+          filters.priceRange[0] > 0 || filters.priceRange[1] < 50000) {
+        
+        const { data: supabaseProducts, error: supabaseError } = await DatabaseService.getProductsWithFilters({
+          categories: filters.categories.length > 0 ? filters.categories : undefined,
+          subCategories: filters.subCategories.length > 0 ? filters.subCategories : undefined,
+          priceRange: filters.priceRange[0] > 0 || filters.priceRange[1] < 50000 ? filters.priceRange : undefined
+        })
+        
+        if (supabaseError) {
+          throw new Error(supabaseError.message)
+        }
+        
+        if (supabaseProducts) {
+          setProducts(supabaseProducts)
+        } else {
+          setProducts([])
+        }
       } else {
-        setProducts([])
+        // Load all products if no filters are active
+        const { data: supabaseProducts, error: supabaseError } = await DatabaseService.getProducts()
+        
+        if (supabaseError) {
+          throw new Error(supabaseError.message)
+        }
+        
+        if (supabaseProducts) {
+          setProducts(supabaseProducts)
+        } else {
+          setProducts([])
+        }
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load products from database')
@@ -74,7 +97,12 @@ export function useProducts(options: UseProductsOptions = {}) {
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [filters.categories, filters.subCategories, filters.priceRange])
+
+  // Reload products when filters change (for backend filtering)
+  useEffect(() => {
+    loadProductsFromSupabase()
+  }, [loadProductsFromSupabase])
 
   const updateFilters = useCallback((newFilters: Partial<SearchFilters>) => {
     setFilters(prev => ({ ...prev, ...newFilters }))
@@ -83,6 +111,7 @@ export function useProducts(options: UseProductsOptions = {}) {
   const clearFilters = useCallback(() => {
     setFilters({
       categories: [],
+      subCategories: [],
       sizes: [],
       availability: [],
       types: [],

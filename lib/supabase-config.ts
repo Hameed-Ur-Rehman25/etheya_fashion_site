@@ -1,5 +1,3 @@
-// Supabase Configuration with Security Best Practices
-// This file should be imported instead of directly using credentials
 
 export const SUPABASE_CONFIG = {
   url: 'https://ttdmlatdeedeeookbhyw.supabase.co',

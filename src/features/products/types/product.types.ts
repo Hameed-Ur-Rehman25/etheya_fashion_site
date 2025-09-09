@@ -7,6 +7,7 @@ export interface Product {
   sizes: string[]
   images: string[]
   category?: string
+  subCategory?: string
   inStock?: boolean
   featured?: boolean
 }
@@ -18,6 +19,7 @@ export interface CartItem extends Product {
 
 export interface SearchFilters {
   categories: string[]
+  subCategories: string[]
   sizes: string[]
   priceRange: [number, number]
   sortBy: 'newest' | 'price-low' | 'price-high' | 'popular'

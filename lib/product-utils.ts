@@ -16,6 +16,11 @@ export function filterProducts(products: Product[], filters: SearchFilters): Pro
       return false
     }
     
+    // Sub-category filter
+    if (filters.subCategories.length > 0 && !filters.subCategories.includes(product.subCategory || '')) {
+      return false
+    }
+    
     // Size filter
     if (filters.sizes.length > 0 && !product.sizes.some(size => filters.sizes.includes(size))) {
       return false

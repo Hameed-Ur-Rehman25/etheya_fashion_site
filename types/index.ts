@@ -7,6 +7,7 @@ export interface Product {
   sizes: string[]
   images: string[]
   category?: string
+  subCategory?: string
   inStock?: boolean
   featured?: boolean
 }
@@ -35,6 +36,7 @@ export interface User {
 
 export interface SearchFilters {
   categories: string[]
+  subCategories: string[]
   sizes: string[]
   availability: string[]
   types: string[]

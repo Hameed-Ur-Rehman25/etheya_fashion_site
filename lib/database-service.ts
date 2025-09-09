@@ -24,6 +24,7 @@ interface DatabaseProduct {
   care_instructions: string | null
   model_size: string | null
   category: string | null
+  sub_category: string | null
   created_at: string
 }
 
@@ -87,6 +88,7 @@ export class DatabaseService {
       sizes: sizes,
       images: images.length > 0 ? images : ['/assets/placeholder.jpg'],
       category: dbProduct.category || 'Uncategorized',
+      subCategory: dbProduct.sub_category || 'Uncategorized',
       inStock: true, // Default to true since we don't have stock tracking
       featured: false // Default to false since we don't have featured flag
     }
@@ -263,6 +265,155 @@ export class DatabaseService {
     }
   }
 
+  static async getProductsBySubCategory(subCategory: string) {
+    try {
+      const { data: products, error: productsError } = await supabase
+        .from('products')
+        .select('*')
+        .eq('sub_category', subCategory)
+        .order('created_at', { ascending: false })
+
+      if (productsError || !products) {
+        return { data: null, error: productsError }
+      }
+
+      // Transform each product
+      const transformedProducts = await Promise.all(
+        products.map(async (product: DatabaseProduct) => {
+          const { data: sizes } = await supabase
+            .from('product_sizes')
+            .select('size')
+            .eq('product_id', product.id)
+
+          const { data: images } = await supabase
+            .from('product_images')
+            .select('image_url')
+            .eq('product_id', product.id)
+
+          const sizeArray = sizes?.map(s => s.size) || ['S', 'M', 'L', 'XL']
+          const imageArray = images?.map(img => img.image_url) || ['/assets/placeholder.jpg']
+
+          return this.transformProduct(product, sizeArray, imageArray)
+        })
+      )
+
+      return { data: transformedProducts, error: null }
+    } catch (error) {
+      console.error('Unexpected error getting products by sub-category:', error)
+      return { data: null, error: error as PostgrestError }
+    }
+  }
+
+  static async getProductsByCategoryAndSubCategory(category: string, subCategory: string) {
+    try {
+      const { data: products, error: productsError } = await supabase
+        .from('products')
+        .select('*')
+        .eq('category', category)
+        .eq('sub_category', subCategory)
+        .order('created_at', { ascending: false })
+
+      if (productsError || !products) {
+        return { data: null, error: productsError }
+      }
+
+      // Transform each product
+      const transformedProducts = await Promise.all(
+        products.map(async (product: DatabaseProduct) => {
+          const { data: sizes } = await supabase
+            .from('product_sizes')
+            .select('size')
+            .eq('product_id', product.id)
+
+          const { data: images } = await supabase
+            .from('product_images')
+            .select('image_url')
+            .eq('product_id', product.id)
+
+          const sizeArray = sizes?.map(s => s.size) || ['S', 'M', 'L', 'XL']
+          const imageArray = images?.map(img => img.image_url) || ['/assets/placeholder.jpg']
+
+          return this.transformProduct(product, sizeArray, imageArray)
+        })
+      )
+
+      return { data: transformedProducts, error: null }
+    } catch (error) {
+      console.error('Unexpected error getting products by category and sub-category:', error)
+      return { data: null, error: error as PostgrestError }
+    }
+  }
+
+  static async getProductsWithFilters(filters: {
+    categories?: string[]
+    subCategories?: string[]
+    sizes?: string[]
+    priceRange?: [number, number]
+  }) {
+    try {
+      let query = supabase
+        .from('products')
+        .select('*')
+
+      // Apply category filter
+      if (filters.categories && filters.categories.length > 0) {
+        query = query.in('category', filters.categories)
+      }
+
+      // Apply sub-category filter
+      if (filters.subCategories && filters.subCategories.length > 0) {
+        query = query.in('sub_category', filters.subCategories)
+      }
+
+      // Apply price range filter
+      if (filters.priceRange) {
+        query = query
+          .gte('price', filters.priceRange[0])
+          .lte('price', filters.priceRange[1])
+      }
+
+      const { data: products, error: productsError } = await query
+        .order('created_at', { ascending: false })
+
+      if (productsError || !products) {
+        return { data: null, error: productsError }
+      }
+
+      // Transform each product
+      const transformedProducts = await Promise.all(
+        products.map(async (product: DatabaseProduct) => {
+          const { data: sizes } = await supabase
+            .from('product_sizes')
+            .select('size')
+            .eq('product_id', product.id)
+
+          const { data: images } = await supabase
+            .from('product_images')
+            .select('image_url')
+            .eq('product_id', product.id)
+
+          const sizeArray = sizes?.map(s => s.size) || ['S', 'M', 'L', 'XL']
+          const imageArray = images?.map(img => img.image_url) || ['/assets/placeholder.jpg']
+
+          return this.transformProduct(product, sizeArray, imageArray)
+        })
+      )
+
+      // Apply size filter after transformation (since sizes are in a separate table)
+      let filteredProducts = transformedProducts
+      if (filters.sizes && filters.sizes.length > 0) {
+        filteredProducts = transformedProducts.filter(product => 
+          product.sizes.some(size => filters.sizes!.includes(size))
+        )
+      }
+
+      return { data: filteredProducts, error: null }
+    } catch (error) {
+      console.error('Unexpected error getting products with filters:', error)
+      return { data: null, error: error as PostgrestError }
+    }
+  }
+
   static async getFeaturedProducts() {
     // Since we don't have a featured flag, return recent products
     return this.getProducts()
@@ -300,6 +451,41 @@ export class DatabaseService {
       return { data: uniqueCategories, error: null }
     } catch (error) {
       console.error('Unexpected error getting categories:', error)
+      return { data: null, error: error as PostgrestError }
+    }
+  }
+
+  static async getSubCategories() {
+    try {
+      const { data: subCategories, error } = await supabase
+        .from('products')
+        .select('sub_category')
+        .not('sub_category', 'is', null)
+
+      if (error || !subCategories) {
+        return { data: null, error }
+      }
+
+      // Get unique sub-categories and count products in each
+      const subCategoryMap = new Map<string, number>()
+      subCategories.forEach(item => {
+        if (item.sub_category) {
+          subCategoryMap.set(item.sub_category, (subCategoryMap.get(item.sub_category) || 0) + 1)
+        }
+      })
+
+      const uniqueSubCategories = Array.from(subCategoryMap.entries()).map(([title, count]) => ({
+        id: title.toLowerCase().replace(/\s+/g, '-'),
+        title,
+        description: `${title} collection`,
+        slug: title.toLowerCase().replace(/\s+/g, '-'),
+        productCount: count,
+        featured: true
+      }))
+
+      return { data: uniqueSubCategories, error: null }
+    } catch (error) {
+      console.error('Unexpected error getting sub-categories:', error)
       return { data: null, error: error as PostgrestError }
     }
   }
