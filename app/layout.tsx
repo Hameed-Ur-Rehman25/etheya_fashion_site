@@ -6,7 +6,7 @@ import { WishlistProvider } from '../context/WishlistContext'
 import { CartProvider } from '../context/CartContext'
 import { BuyNowProvider } from '../context/BuyNowContext'
 import { ProductCacheProvider } from '../context/ProductCacheContext'
-import { Toaster } from '@/components/ui/toaster'
+import { Toaster } from '@/src/shared/components/ui/toaster'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 const playfair = Playfair_Display({ subsets: ['latin'], variable: '--font-playfair' })

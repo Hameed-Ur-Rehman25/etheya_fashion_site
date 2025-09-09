@@ -1,7 +1,7 @@
 'use client'
 
 import { CollapsibleFilter, FilterCheckbox, PriceRangeFilter } from './collapsible-filter'
-import { Button } from '@/components/ui/button'
+import { Button } from '@/src/shared/components/ui/button'
 import { SearchFilters } from '@/types'
 import { 
   CATEGORIES, 

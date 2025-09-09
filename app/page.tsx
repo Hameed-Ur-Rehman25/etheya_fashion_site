@@ -4,8 +4,8 @@
 import { useState, useEffect } from 'react'
 import Image from "next/image"
 import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { Button } from "@/src/shared/components/ui/button"
+import { Input } from "@/src/shared/components/ui/input"
 import { Heart } from 'lucide-react'
 import { Navbar } from '@/components/navbar'
 import { HeroSection } from '@/components/hero-section'
@@ -14,7 +14,7 @@ import { NewArrivalsCarousel } from '@/components/new-arrivals-carousel'
 import { SimpleProductGrid } from '@/components/simple-product-grid'
 import { SimpleProductCard } from '@/components/simple-product-card'
 import { ProductModal } from '@/components/product-modal'
-import { Spotlight } from "@/components/ui/spotlight"
+import { Spotlight } from "@/src/shared/components/ui/spotlight"
 import { ReviewsSection } from '@/components/reviews-section'
 import { Product } from '@/types'
 import { useProductCache } from '@/context/ProductCacheContext'

@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import { Search, X } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
+import { Button } from '@/src/shared/components/ui/button'
+import { Input } from '@/src/shared/components/ui/input'
+import { Dialog, DialogContent, DialogTitle } from '@/src/shared/components/ui/dialog'
 import Image from 'next/image'
 
 const searchResults = [

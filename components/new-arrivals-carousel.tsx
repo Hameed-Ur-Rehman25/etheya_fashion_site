@@ -3,11 +3,11 @@
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { ChevronLeft, ChevronRight, Heart } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { Button } from '@/src/shared/components/ui/button'
 import { ProductModal } from './product-modal'
 import { SectionContainer } from './section-container'
 import { Product } from '@/types'
-import { Lens } from '@/components/ui/lens'
+import { Lens } from '@/src/shared/components/ui/lens'
 import { useProductCache } from '@/context/ProductCacheContext'
 
 export function NewArrivalsCarousel() {

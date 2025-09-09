@@ -3,8 +3,8 @@
 import { useCartContext } from '@/context/CartContext'
 import Image from 'next/image'
 import { X, Plus, Minus, Trash2, ArrowLeft } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
+import { Button } from '@/src/shared/components/ui/button'
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/src/shared/components/ui/sheet'
 import { useRouter } from 'next/navigation'
 
 // Removed static cartItems, using context instead

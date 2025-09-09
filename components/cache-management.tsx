@@ -1,10 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
+import { Button } from '@/src/shared/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/src/shared/components/ui/card';
+import { Badge } from '@/src/shared/components/ui/badge';
+import { Separator } from '@/src/shared/components/ui/separator';
 import { RefreshCw, Trash2, Clock, Database, AlertCircle } from 'lucide-react';
 import { useProductCache } from '@/context/ProductCacheContext';
 import { CacheService, CACHE_KEYS } from '@/lib/cache-service';

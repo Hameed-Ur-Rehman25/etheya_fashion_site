@@ -2,8 +2,8 @@
 
 import { useState } from 'react'
 import { ChevronDown, ChevronUp } from 'lucide-react'
-import { Checkbox } from '@/components/ui/checkbox'
-import { Slider } from '@/components/ui/slider'
+import { Checkbox } from '@/src/shared/components/ui/checkbox'
+import { Slider } from '@/src/shared/components/ui/slider'
 import { cn } from '@/lib/utils'
 
 interface CollapsibleFilterProps {

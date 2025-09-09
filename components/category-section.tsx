@@ -3,7 +3,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
-import { Button } from '@/components/ui/button'
+import { Button } from '@/src/shared/components/ui/button'
 import { SectionContainer } from './section-container'
 import { DatabaseService } from '@/lib/database-service'
 import { CATEGORIES } from '@/lib/constants'

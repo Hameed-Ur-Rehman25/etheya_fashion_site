@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react'
 import { Heart, ShoppingCart, Filter } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { Button } from '@/src/shared/components/ui/button'
 import { Navbar } from '@/components/navbar'
 import { SimpleProductGrid } from '@/components/simple-product-grid'
 import { ProductModal } from '@/components/product-modal'
@@ -20,7 +20,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
+} from '@/src/shared/components/ui/select'
 import { 
   Sheet,
   SheetContent,
@@ -28,7 +28,7 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from '@/components/ui/sheet'
+} from '@/src/shared/components/ui/sheet'
 
 export default function WishlistPage() {
   const { wishlist, toggleWishlist, clearWishlist } = useWishlist();

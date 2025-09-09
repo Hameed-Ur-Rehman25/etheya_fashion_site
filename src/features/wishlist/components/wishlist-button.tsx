@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { Heart } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { Button } from '@/src/shared/components/ui/button'
 import { Product } from '../../products/types/product.types'
 import { cn } from '@/lib/utils'
 

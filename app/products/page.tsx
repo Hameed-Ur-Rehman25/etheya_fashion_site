@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { Filter, LayoutGrid } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { Button } from '@/src/shared/components/ui/button'
 import { Navbar } from '@/components/navbar'
 import { SimpleProductGrid } from '@/components/simple-product-grid'
 import { ProductModal } from '@/components/product-modal'
@@ -16,7 +16,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
+} from '@/src/shared/components/ui/select'
 import { 
   Sheet,
   SheetContent,
@@ -24,7 +24,7 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from '@/components/ui/sheet'
+} from '@/src/shared/components/ui/sheet'
 import { CATEGORIES } from '@/src/data/products.data'
 import { SORT_OPTIONS, PRICE_RANGES } from '@/lib/constants'
 import { Product, SearchFilters } from '@/types'

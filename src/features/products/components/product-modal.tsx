@@ -3,9 +3,9 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import { X, Heart, ChevronLeft, ChevronRight, ShoppingBag } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent } from '@/components/ui/dialog'
-import { Badge } from '@/components/ui/badge'
+import { Button } from '@/src/shared/components/ui/button'
+import { Dialog, DialogContent } from '@/src/shared/components/ui/dialog'
+import { Badge } from '@/src/shared/components/ui/badge'
 import { Product } from '../types/product.types'
 import { formatPrice } from '../utils/product.utils'
 

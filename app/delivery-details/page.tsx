@@ -6,11 +6,11 @@ import { useBuyNow } from "@/context/BuyNowContext";
 import Image from "next/image";
 import { CartItem } from "@/types";
 import { Navbar } from "@/components/navbar";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Button } from "@/src/shared/components/ui/button";
+import { Input } from "@/src/shared/components/ui/input";
+import { Label } from "@/src/shared/components/ui/label";
+import { Checkbox } from "@/src/shared/components/ui/checkbox";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/src/shared/components/ui/select";
 import { useRouter } from "next/navigation";
 import { AlertCircle } from "lucide-react";
 

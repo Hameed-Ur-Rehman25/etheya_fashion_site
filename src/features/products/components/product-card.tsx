@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import { Heart, Plus } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { Button } from '@/src/shared/components/ui/button'
 import { Product, ViewMode } from '../types/product.types'
 import { formatPrice } from '../utils/product.utils'
 import { cn } from '@/lib/utils'

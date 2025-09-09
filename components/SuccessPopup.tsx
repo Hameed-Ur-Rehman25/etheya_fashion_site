@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { CheckCircle, ShoppingBag } from 'lucide-react';
-import { Button } from './ui/button';
+import { Button } from '@/src/shared/components/ui/button';
 import { useRouter } from 'next/navigation';
 
 interface SuccessPopupProps {
