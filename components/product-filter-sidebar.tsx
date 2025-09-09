@@ -47,8 +47,8 @@ export function ProductFilterSidebar({
   }
 
   return (
-    <div className="w-full max-w-xs bg-white border-r border-gray-200">
-      <div className="p-4 space-y-3">
+    <div className="w-full max-w-xs bg-white h-full">
+      <div className="p-4 space-y-3 pb-6">
         
         {/* Categories Filter */}
   <CollapsibleFilter title="CATEGORIES" isOpen={true}>

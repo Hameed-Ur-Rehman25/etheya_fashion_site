@@ -58,10 +58,10 @@ export function NewArrivalsCarousel() {
   // Show loading state
   if (loading) {
     return (
-      <section className="relative py-20 px-6 bg-cover bg-center bg-no-repeat overflow-hidden"
+      <section className="relative py-12 md:py-16 px-6 bg-cover bg-center bg-no-repeat overflow-hidden"
         style={{ backgroundImage: 'url(/assets/bg1.png)', backgroundBlendMode: 'overlay', backgroundColor: 'rgba(255, 255, 255, 0.8)' }}>
         <div className="relative z-10 max-w-7xl mx-auto">
-          <div className="text-center mb-16">
+          <div className="text-center mb-8 md:mb-12">
             <h2 className="text-3xl md:text-4xl font-playfair font-bold text-gray-900 mb-4">
               New Arrivals
             </h2>
@@ -77,10 +77,10 @@ export function NewArrivalsCarousel() {
   // Show empty state if no products
   if (products.length === 0) {
     return (
-      <section className="relative py-20 px-6 bg-cover bg-center bg-no-repeat overflow-hidden"
+      <section className="relative py-12 md:py-16 px-6 bg-cover bg-center bg-no-repeat overflow-hidden"
         style={{ backgroundImage: 'url(/assets/bg1.png)', backgroundBlendMode: 'overlay', backgroundColor: 'rgba(255, 255, 255, 0.8)' }}>
         <div className="relative z-10 max-w-7xl mx-auto">
-          <div className="text-center mb-16">
+          <div className="text-center mb-8 md:mb-12">
             <h2 className="text-3xl md:text-4xl font-playfair font-bold text-gray-900 mb-4">
               New Arrivals
             </h2>
@@ -100,7 +100,7 @@ export function NewArrivalsCarousel() {
         style={{ backgroundImage: 'url(/assets/bg1.png)', backgroundBlendMode: 'overlay', backgroundColor: 'rgba(255, 255, 255, 0.8)' }}
       >
         <div className="relative z-10 max-w-7xl mx-auto">
-          <div className="text-center mb-10 md:mb-16">
+          <div className="text-center mb-10 md:mb-8 md:mb-12">
             <h2 className="text-2xl md:text-4xl font-playfair font-bold text-gray-900 mb-3 md:mb-4">
               New Arrivals
             </h2>
@@ -132,7 +132,7 @@ export function NewArrivalsCarousel() {
             </div>
 
             {/* Single Product Display */}
-            <div className="flex flex-col md:flex-row items-center gap-6 md:gap-8 px-2 md:px-16">
+            <div className="flex flex-col md:flex-row items-center gap-4 md:gap-8 px-2 md:px-16">
               {/* Images Section */}
               <div className="flex flex-col md:flex-row gap-4 md:gap-8 w-full justify-center items-center">
                 {/* Large Image */}
@@ -216,24 +216,24 @@ export function NewArrivalsCarousel() {
                 </div>
               </div>
               {/* Product Details Section - show below image on mobile */}
-              <div className="block md:hidden w-full mt-4">
+              <div className="block md:hidden w-full mt-2">
                 <div className="text-center px-2">
                   {/* Category */}
                   {currentProduct.category && (
-                    <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">
+                    <p className="text-xs text-gray-500 uppercase tracking-wider mb-0.5">
                       {currentProduct.category}
                     </p>
                   )}
                   {/* Product Title */}
-                  <h3 className="text-base font-playfair font-bold text-gray-900 mb-2 leading-tight">
+                  <h3 className="text-base font-playfair font-bold text-gray-900 mb-1 leading-tight">
                     {currentProduct.title}
                   </h3>
                   {/* Description */}
-                  <p className="text-xs text-gray-600 mb-3 leading-relaxed">
+                  <p className="text-xs text-gray-600 mb-2 leading-relaxed">
                     {currentProduct.description}
                   </p>
                   {/* Price */}
-                  <p className="text-lg font-bold text-gray-900 mb-4">
+                  <p className="text-lg font-bold text-gray-900 mb-3">
                     {currentProduct.price}
                   </p>
                   {/* Action Button */}

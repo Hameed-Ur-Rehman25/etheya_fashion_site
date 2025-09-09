@@ -88,9 +88,9 @@ export default function HomePage() {
       </main>
 
       {/* This Week Top 4 - mobile: horizontal scroll, desktop: grid */}
-      <section className="py-16 px-2 md:px-6 bg-white">
+      <section className="py-12 md:py-16 px-2 md:px-6 bg-white">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-10 md:mb-16">
+          <div className="text-center mb-8 md:mb-12">
             <h2 className="text-2xl md:text-4xl font-playfair font-bold text-gray-900 mb-3 md:mb-4">
               This Week's Top 4
             </h2>
@@ -133,9 +133,9 @@ export default function HomePage() {
       <ReviewsSection />
 
       {/* All Products Section */}
-      <section className="py-16 px-6 bg-white">
+      <section className="py-12 md:py-16 px-6 bg-white">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
+          <div className="text-center mb-8 md:mb-12">
             <h2 className="text-3xl md:text-4xl font-playfair font-bold text-gray-900 mb-4">
               All Products
             </h2>

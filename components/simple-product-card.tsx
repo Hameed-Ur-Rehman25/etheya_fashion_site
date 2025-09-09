@@ -69,13 +69,13 @@ export function SimpleProductCard({
       onClick={handleCardClick}
     >
       {/* Image Section */}
-      <div className="relative overflow-hidden bg-gray-50 w-full h-48 sm:w-60 sm:h-96">
+      <div className="relative overflow-hidden bg-gray-50 w-full h-64 sm:w-60 sm:h-96">
         <Image
           src={isHovered ? hoverImage : product.image || "/placeholder.svg"}
           alt={product.title}
           width={200}
           height={400}
-          className="w-full h-full object-cover transition-all duration-500 ease-in-out"
+          className="w-full h-full object-cover object-center transition-all duration-500 ease-in-out"
         />
         
         {/* Favorite Icon - positioned at top-right within image */}

@@ -149,13 +149,6 @@ export function Navbar() {
                 >
                   All Products
                 </Link>
-                <Link 
-                  href="/contact" 
-                  className="text-gray-700 hover:text-gray-900 transition-colors py-2"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Contact
-                </Link>
                 <a 
                   href="#footer" 
                   className="text-gray-700 hover:text-gray-900 transition-colors py-2"
@@ -168,7 +161,7 @@ export function Navbar() {
                     }
                   }}
                 >
-                  About us
+                  Contact
                 </a>
               </div>
             </div>

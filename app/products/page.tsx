@@ -123,18 +123,20 @@ function ProductsPageContent() {
                   Filter products by category, size, price, and more
                 </Button>
               </SheetTrigger>
-              <SheetContent side="left" className="w-80">
-                <SheetHeader>
+              <SheetContent side="left" className="w-80 p-0 flex flex-col h-full">
+                <SheetHeader className="px-6 py-4 border-b flex-shrink-0">
                   <SheetTitle>Filters</SheetTitle>
                   <SheetDescription>
                     Filter products by category, size, price, and more
                   </SheetDescription>
                 </SheetHeader>
-                <ProductFilterSidebar
-                  filters={filters}
-                  onFiltersChange={handleFiltersChange}
-                  onClearFilters={clearAllFilters}
-                />
+                <div className="flex-1 overflow-y-auto min-h-0">
+                  <ProductFilterSidebar
+                    filters={filters}
+                    onFiltersChange={handleFiltersChange}
+                    onClearFilters={clearAllFilters}
+                  />
+                </div>
               </SheetContent>
             </Sheet>
           </div>
