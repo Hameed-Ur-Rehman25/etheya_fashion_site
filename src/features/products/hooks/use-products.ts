@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { Product } from '../types/product.types'
 import { SearchFilters } from '@/types'
 import { filterProducts, sortProducts, searchProducts } from '../utils/product.utils'
-import { DatabaseService } from '@/lib/database-service'
+import { useProductCache } from '@/context/ProductCacheContext'
 
 interface UseProductsOptions {
   initialProducts?: Product[]
@@ -10,10 +10,16 @@ interface UseProductsOptions {
 }
 
 export function useProducts(options: UseProductsOptions = {}) {
-  const [products, setProducts] = useState<Product[]>(options.initialProducts || [])
+  // Use the global product cache
+  const { 
+    products: cachedProducts, 
+    loading: cacheLoading, 
+    error: cacheError,
+    refreshCache,
+    isCacheValid
+  } = useProductCache()
+  
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([])
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
   const [filters, setFilters] = useState<SearchFilters>(
     options.initialFilters || {
       categories: [],
@@ -29,10 +35,10 @@ export function useProducts(options: UseProductsOptions = {}) {
   )
   const [searchQuery, setSearchQuery] = useState('')
 
-  // Load products from Supabase on component mount
-  useEffect(() => {
-    loadProductsFromSupabase()
-  }, [])
+  // Use cached products or initial products
+  const products = cachedProducts.length > 0 ? cachedProducts : (options.initialProducts || [])
+  const loading = cacheLoading
+  const error = cacheError
 
   // Apply filters and search whenever products, filters, or search query changes
   useEffect(() => {
@@ -52,57 +58,18 @@ export function useProducts(options: UseProductsOptions = {}) {
     setFilteredProducts(result)
   }, [products, filters, searchQuery])
 
-  const loadProductsFromSupabase = useCallback(async () => {
-    setLoading(true)
-    setError(null)
-    
-    try {
-      // Use the new filtering method if we have active filters
-      if (filters.categories.length > 0 || filters.subCategories.length > 0 || 
-          filters.priceRange[0] > 0 || filters.priceRange[1] < 50000) {
-        
-        const { data: supabaseProducts, error: supabaseError } = await DatabaseService.getProductsWithFilters({
-          categories: filters.categories.length > 0 ? filters.categories : undefined,
-          subCategories: filters.subCategories.length > 0 ? filters.subCategories : undefined,
-          priceRange: filters.priceRange[0] > 0 || filters.priceRange[1] < 50000 ? filters.priceRange : undefined
-        })
-        
-        if (supabaseError) {
-          throw new Error(supabaseError.message)
-        }
-        
-        if (supabaseProducts) {
-          setProducts(supabaseProducts)
-        } else {
-          setProducts([])
-        }
-      } else {
-        // Load all products if no filters are active
-        const { data: supabaseProducts, error: supabaseError } = await DatabaseService.getProducts()
-        
-        if (supabaseError) {
-          throw new Error(supabaseError.message)
-        }
-        
-        if (supabaseProducts) {
-          setProducts(supabaseProducts)
-        } else {
-          setProducts([])
-        }
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load products from database')
-      // Fallback to empty array if database fails
-      setProducts([])
-    } finally {
-      setLoading(false)
-    }
-  }, [filters.categories, filters.subCategories, filters.priceRange])
-
-  // Reload products when filters change (for backend filtering)
+  // Refresh cache if needed when filters change significantly
   useEffect(() => {
-    loadProductsFromSupabase()
-  }, [loadProductsFromSupabase])
+    // Only refresh cache if it's invalid and we have significant filters
+    const hasSignificantFilters = filters.categories.length > 0 || 
+                                 filters.subCategories.length > 0 || 
+                                 filters.priceRange[0] > 0 || 
+                                 filters.priceRange[1] < 50000
+    
+    if (!isCacheValid() && hasSignificantFilters) {
+      refreshCache()
+    }
+  }, [filters.categories, filters.subCategories, filters.priceRange, isCacheValid, refreshCache])
 
   const updateFilters = useCallback((newFilters: Partial<SearchFilters>) => {
     setFilters(prev => ({ ...prev, ...newFilters }))
@@ -123,35 +90,27 @@ export function useProducts(options: UseProductsOptions = {}) {
     setSearchQuery('')
   }, [])
 
-  const loadProducts = useCallback(async (productData: Product[]) => {
-    setLoading(true)
-    setError(null)
-    
-    try {
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 300))
-      setProducts(productData)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load products')
-    } finally {
-      setLoading(false)
+  // Force refresh cache
+  const loadProducts = useCallback(async (productData?: Product[]) => {
+    if (productData) {
+      // If product data is provided, we can't directly update the cache
+      // This would require extending the cache context
+      console.warn('loadProducts with data not supported in cached mode')
     }
-  }, [])
+    await refreshCache()
+  }, [refreshCache])
 
+  // These methods are kept for compatibility but don't modify the global cache
   const addProduct = useCallback((product: Product) => {
-    setProducts(prev => [...prev, product])
+    console.warn('addProduct not supported in cached mode - use cache refresh instead')
   }, [])
 
   const updateProduct = useCallback((id: number, updates: Partial<Product>) => {
-    setProducts(prev => 
-      prev.map(product => 
-        product.id === id ? { ...product, ...updates } : product
-      )
-    )
+    console.warn('updateProduct not supported in cached mode - use cache refresh instead')
   }, [])
 
   const removeProduct = useCallback((id: number) => {
-    setProducts(prev => prev.filter(product => product.id !== id))
+    console.warn('removeProduct not supported in cached mode - use cache refresh instead')
   }, [])
 
   return {
@@ -164,12 +123,10 @@ export function useProducts(options: UseProductsOptions = {}) {
     searchQuery,
     
     // Actions
-    setProducts,
     setSearchQuery,
     updateFilters,
     clearFilters,
-    loadProducts,
-    loadProductsFromSupabase, // New method to reload from Supabase
+    loadProducts, // Now refreshes cache
     addProduct,
     updateProduct,
     removeProduct,

@@ -8,36 +8,17 @@ import { ProductModal } from './product-modal'
 import { SectionContainer } from './section-container'
 import { Product } from '@/types'
 import { Lens } from '@/components/ui/lens'
-import { DatabaseService } from '@/lib/database-service'
+import { useProductCache } from '@/context/ProductCacheContext'
 
 export function NewArrivalsCarousel() {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
-  const [products, setProducts] = useState<Product[]>([])
-  const [loading, setLoading] = useState(true)
   
-  // Fetch products from Supabase on component mount
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const { data: supabaseProducts, error } = await DatabaseService.getProducts()
-        if (error) {
-          console.error('Error fetching products:', error)
-          setProducts([])
-        } else if (supabaseProducts) {
-          // Use the first 5 products as new arrivals
-          setProducts(supabaseProducts.slice(0, 5))
-        }
-      } catch (err) {
-        console.error('Failed to fetch products:', err)
-        setProducts([])
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchProducts()
-  }, [])
+  // Use cached products
+  const { products: allProducts, loading } = useProductCache()
+  
+  // Use the first 5 products as new arrivals
+  const products = allProducts.slice(0, 5)
 
   const nextSlide = () => {
     if (products.length === 0) return

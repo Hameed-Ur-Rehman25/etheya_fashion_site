@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { DatabaseService } from '@/lib/database-service';
 
 // Hero data interface and configuration
 interface HeroImage {
@@ -15,7 +16,8 @@ interface HeroImage {
   contentPosition: 'left' | 'right';
 }
 
-const heroImages: HeroImage[] = [
+// Fallback hero images in case backend fails
+const fallbackHeroImages: HeroImage[] = [
   {
     src: "/assets/image3.jpeg",
     alt: "Hero background with models in South Asian clothing - Image 1",
@@ -25,7 +27,7 @@ const heroImages: HeroImage[] = [
     contentPosition: "right"
   },
   {
-    src: "/assets/image2.png", 
+    src: "/assets/image2.jpeg", 
     alt: "Hero background with models in South Asian clothing - Image 2",
     title: "Timeless Beauty",
     subtitle: "Experience the perfect blend of tradition and contemporary style",
@@ -38,25 +40,60 @@ export function HeroSection() {
   const [mounted, setMounted] = useState(false);
   const [currentImage, setCurrentImage] = useState(0);
   const [textKey, setTextKey] = useState(0);
+  const [heroImages, setHeroImages] = useState<HeroImage[]>(fallbackHeroImages);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     setMounted(true);
     
-    // Auto-play only after mounting
-    const timer = setTimeout(() => {
-      const interval = setInterval(() => {
-        setCurrentImage((prev) => {
-          const newIndex = (prev + 1) % heroImages.length;
-          setTextKey(prevKey => prevKey + 1);
-          return newIndex;
-        });
-      }, 10000);
+    // Fetch hero images from backend
+    const fetchHeroImages = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        const { data, error: fetchError } = await DatabaseService.getHeroImages();
+        
+        if (fetchError) {
+          console.error('Error fetching hero images:', fetchError);
+          setError('Failed to load hero images');
+          // Use fallback images
+          setHeroImages(fallbackHeroImages);
+        } else if (data && data.length > 0) {
+          setHeroImages(data);
+        } else {
+          console.warn('No hero images found, using fallback');
+          setHeroImages(fallbackHeroImages);
+        }
+      } catch (err) {
+        console.error('Unexpected error fetching hero images:', err);
+        setError('Failed to load hero images');
+        setHeroImages(fallbackHeroImages);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-      return () => clearInterval(interval);
+    fetchHeroImages();
+    
+    // Auto-play only after mounting and images are loaded
+    const timer = setTimeout(() => {
+      if (heroImages.length > 1) {
+        const interval = setInterval(() => {
+          setCurrentImage((prev) => {
+            const newIndex = (prev + 1) % heroImages.length;
+            setTextKey(prevKey => prevKey + 1);
+            return newIndex;
+          });
+        }, 10000);
+
+        return () => clearInterval(interval);
+      }
     }, 1000);
 
     return () => clearTimeout(timer);
-  }, []);
+  }, [heroImages.length]);
 
   const handleImageSelect = (index: number) => {
     if (!mounted) return;
@@ -66,6 +103,35 @@ export function HeroSection() {
 
   // Use first image for SSR, current for client
   const displayImage = heroImages[mounted ? currentImage : 0];
+
+  // Show loading state
+  if (loading && heroImages === fallbackHeroImages) {
+    return (
+      <section className="relative h-screen flex items-center justify-center overflow-hidden bg-gray-100">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading hero images...</p>
+        </div>
+      </section>
+    );
+  }
+
+  // Show error state if there's an error and no fallback images
+  if (error && heroImages.length === 0) {
+    return (
+      <section className="relative h-screen flex items-center justify-center overflow-hidden bg-gray-100">
+        <div className="text-center">
+          <p className="text-red-600 mb-4">{error}</p>
+          <Button 
+            onClick={() => window.location.reload()} 
+            variant="outline"
+          >
+            Retry
+          </Button>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="relative h-screen flex items-center overflow-hidden">

@@ -5,6 +5,7 @@ import './globals.css'
 import { WishlistProvider } from '../context/WishlistContext'
 import { CartProvider } from '../context/CartContext'
 import { BuyNowProvider } from '../context/BuyNowContext'
+import { ProductCacheProvider } from '../context/ProductCacheContext'
 import { Toaster } from '@/components/ui/toaster'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
@@ -29,14 +30,16 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.variable} ${playfair.variable} ${happyMonkey.variable} font-sans antialiased`}>
-        <WishlistProvider>
-          <CartProvider>
-            <BuyNowProvider>
-              {children}
-              <Toaster />
-            </BuyNowProvider>
-          </CartProvider>
-        </WishlistProvider>
+        <ProductCacheProvider>
+          <WishlistProvider>
+            <CartProvider>
+              <BuyNowProvider>
+                {children}
+                <Toaster />
+              </BuyNowProvider>
+            </CartProvider>
+          </WishlistProvider>
+        </ProductCacheProvider>
       </body>
     </html>
   )

@@ -40,6 +40,20 @@ interface DatabaseProductImage {
   image_url: string
 }
 
+interface DatabaseHeroImage {
+  id: string
+  src: string
+  alt: string
+  title: string
+  subtitle: string
+  button_text: string
+  content_position: 'left' | 'right'
+  active: boolean
+  order_index: number
+  created_at: string
+  updated_at: string
+}
+
 // Security: Database service with proper error handling and validation
 export class DatabaseService {
   // Security: Generic error handler
@@ -845,6 +859,42 @@ export class DatabaseService {
       console.error('Error message:', error instanceof Error ? error.message : 'Unknown error')
       console.error('Full error:', error)
       console.error('=== END UNEXPECTED ERROR ===')
+      return { data: null, error: error as PostgrestError }
+    }
+  }
+
+  // Hero images operations
+  static async getHeroImages() {
+    try {
+      const { data: heroImages, error } = await supabase
+        .from('hero_images')
+        .select('*')
+        .eq('active', true)
+        .order('order_index', { ascending: true })
+
+      if (error) {
+        console.error('Error fetching hero images:', error)
+        return { data: null, error }
+      }
+
+      if (!heroImages || heroImages.length === 0) {
+        console.warn('No active hero images found')
+        return { data: [], error: null }
+      }
+
+      // Transform database hero images to UI format
+      const transformedHeroImages = heroImages.map((heroImage: DatabaseHeroImage) => ({
+        src: heroImage.src,
+        alt: heroImage.alt,
+        title: heroImage.title,
+        subtitle: heroImage.subtitle,
+        buttonText: heroImage.button_text,
+        contentPosition: heroImage.content_position
+      }))
+
+      return { data: transformedHeroImages, error: null }
+    } catch (error) {
+      console.error('Unexpected error getting hero images:', error)
       return { data: null, error: error as PostgrestError }
     }
   }

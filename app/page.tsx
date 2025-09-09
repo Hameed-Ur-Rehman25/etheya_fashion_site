@@ -17,43 +17,21 @@ import { ProductModal } from '@/components/product-modal'
 import { Spotlight } from "@/components/ui/spotlight"
 import { ReviewsSection } from '@/components/reviews-section'
 import { Product } from '@/types'
-import { DatabaseService } from '@/lib/database-service'
+import { useProductCache } from '@/context/ProductCacheContext'
 
 import { ProductCard } from '@/components/product-card'
 
 export default function HomePage() {
   const [wishlistedIds, setWishlistedIds] = useState<Set<number>>(new Set())
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
-  const [topProducts, setTopProducts] = useState<Product[]>([])
-  const [allProducts, setAllProducts] = useState<Product[]>([])
-  const [loading, setLoading] = useState(true)
-
-  // Fetch products from Supabase on component mount
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const { data: supabaseProducts, error } = await DatabaseService.getProducts()
-        if (error) {
-          console.error('Error fetching products:', error)
-          setTopProducts([])
-          setAllProducts([])
-        } else if (supabaseProducts) {
-          // Use the first 4 products for top section
-          setTopProducts(supabaseProducts.slice(0, 4))
-          // Use the first 8 products for all products section
-          setAllProducts(supabaseProducts.slice(0, 8))
-        }
-      } catch (err) {
-        console.error('Failed to fetch products:', err)
-        setTopProducts([])
-        setAllProducts([])
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchProducts()
-  }, [])
+  
+  // Use cached products
+  const { products, loading, getFeaturedProducts } = useProductCache()
+  
+  // Get featured products for top section, fallback to first 4 products
+  const featuredProducts = getFeaturedProducts()
+  const topProducts = featuredProducts.length > 0 ? featuredProducts.slice(0, 4) : products.slice(0, 4)
+  const allProducts = products.slice(0, 8)
 
   const handleAddToCart = (product: Product) => {
     console.log('Add to cart:', product.title)
