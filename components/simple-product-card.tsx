@@ -69,7 +69,7 @@ export function SimpleProductCard({
       onClick={handleCardClick}
     >
       {/* Image Section */}
-      <div className="relative overflow-hidden bg-gray-50 w-60 h-96">
+      <div className="relative overflow-hidden bg-gray-50 w-full h-48 sm:w-60 sm:h-96">
         <Image
           src={isHovered ? hoverImage : product.image || "/placeholder.svg"}
           alt={product.title}
@@ -109,12 +109,12 @@ export function SimpleProductCard({
       </div>
       
       {/* Product Details */}
-      <div className="pt-4 pb-2 w-60 text-center">
-        <h3 className="text-sm font-medium text-black mb-2 leading-tight px-2 break-words">
+      <div className="pt-2 pb-1 sm:pt-4 sm:pb-2 w-full sm:w-60 text-center">
+        <h3 className="text-xs sm:text-sm font-medium text-black mb-1 sm:mb-2 leading-tight px-1 sm:px-2 break-words">
           {product.title}
         </h3>
         
-        <p className="text-sm font-medium text-black">
+        <p className="text-xs sm:text-sm font-medium text-black">
           {product.price}
         </p>
       </div>

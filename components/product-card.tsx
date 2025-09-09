@@ -42,14 +42,18 @@ export function ProductCard({
   return (
     <div
       className={cn(
-        "group cursor-pointer transform transition-all duration-300 hover:-translate-y-2 hover:shadow-xl bg-white rounded-lg overflow-hidden border",
+        "group cursor-pointer transition-all duration-300 bg-white rounded-lg overflow-hidden border",
+        // Mobile: tighter, smaller, no hover effects
+        "p-2 gap-1",
+        // Desktop: restore original padding, hover
+        "sm:p-6 sm:gap-2 sm:hover:-translate-y-2 sm:hover:shadow-xl",
         isListView ? "flex" : "",
         className
       )}
     >
       {/* Image Section */}
       <div className={cn(
-        "relative overflow-hidden",
+        "relative overflow-hidden aspect-[3/4]",
         isListView ? "w-48 flex-shrink-0" : ""
       )}>
         <Image
@@ -57,10 +61,7 @@ export function ProductCard({
           alt={product.title}
           width={300}
           height={400}
-          className={cn(
-            "object-cover group-hover:scale-105 transition-transform duration-500",
-            isListView ? "w-full h-48" : "w-full h-80"
-          )}
+          className="object-cover w-full h-40 sm:h-80 rounded-md"
         />
         
         {/* Overlay Actions */}
@@ -116,13 +117,13 @@ export function ProductCard({
       </div>
       
       {/* Content Section */}
-      <div className={cn("p-6", isListView ? "flex-1" : "")}>
-        <div className="flex items-start justify-between mb-2">
-          <h3 className="text-lg font-medium text-gray-900 group-hover:text-blue-600 transition-colors">
+  <div className={cn("pt-2 px-1 pb-1 sm:p-6", isListView ? "flex-1" : "")}> 
+        <div className="flex flex-col gap-1 mb-1">
+          <h3 className="text-[13px] font-semibold text-gray-900 sm:text-lg group-hover:text-blue-600 transition-colors">
             {isListView ? product.title : truncateText(product.title, 30)}
           </h3>
           {product.category && (
-            <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded flex-shrink-0">
+            <span className="text-[11px] bg-gray-100 text-gray-600 px-1 py-0.5 rounded w-fit">
               {product.category}
             </span>
           )}
@@ -134,25 +135,11 @@ export function ProductCard({
           </p>
         )}
 
-        <div className="flex items-center justify-between mb-4">
-          <p className="text-xl font-bold text-gray-900">
+        <div className="flex items-center justify-between mb-2">
+          <p className="text-[15px] font-bold text-gray-900">
             {formatPrice(product.price)}
           </p>
-          <div className="flex space-x-1">
-            {product.sizes.slice(0, 3).map((size) => (
-              <span
-                key={size}
-                className="text-xs bg-gray-50 text-gray-600 px-2 py-1 rounded"
-              >
-                {size}
-              </span>
-            ))}
-            {product.sizes.length > 3 && (
-              <span className="text-xs text-gray-400">
-                +{product.sizes.length - 3}
-              </span>
-            )}
-          </div>
+          <span className="text-[11px] bg-blue-100 text-blue-700 px-1 py-0.5 rounded">NEW IN</span>
         </div>
 
         {/* Action Buttons */}

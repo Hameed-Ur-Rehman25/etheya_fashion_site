@@ -32,7 +32,7 @@ export function ProductGrid({
       <div className={cn(
         "grid gap-6",
         viewMode === 'grid' 
-          ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3" 
+          ? "grid-cols-2 md:grid-cols-2 lg:grid-cols-3" 
           : "grid-cols-1",
         className
       )}>
@@ -62,15 +62,16 @@ export function ProductGrid({
   }
 
   return (
-    <div
-      className={cn(
-        "grid gap-6",
-        viewMode === 'grid' 
-          ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3" 
-          : "grid-cols-1",
-        className
-      )}
-    >
+        <div
+          className={cn(
+            // Mobile: 2 columns, tighter gap, padding
+            "grid gap-3 px-2 grid-cols-2",
+            // Tablet/Desktop: restore original spacing and columns
+            "sm:gap-6 sm:px-0 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3",
+            viewMode !== 'grid' && "grid-cols-1 sm:grid-cols-1",
+            className
+          )}
+        >
       {products.map((product) => (
         <ProductCard
           key={product.id}

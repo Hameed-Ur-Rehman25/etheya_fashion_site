@@ -143,14 +143,14 @@ export default function HomePage() {
               Discover our complete collection of premium fashion pieces
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
                          {loading ? (
                // Show loading skeleton
                Array(8).fill(null).map((_, i) => (
                 <div key={i} className="animate-pulse">
-                  <div className="bg-gray-200 h-64 rounded-lg mb-4"></div>
-                  <div className="bg-gray-200 h-4 rounded mb-2"></div>
-                  <div className="bg-gray-200 h-4 rounded w-3/4"></div>
+                  <div className="bg-gray-200 h-48 sm:h-64 rounded-lg mb-2 sm:mb-4"></div>
+                  <div className="bg-gray-200 h-3 sm:h-4 rounded mb-1 sm:mb-2"></div>
+                  <div className="bg-gray-200 h-3 sm:h-4 rounded w-3/4"></div>
                 </div>
               ))
             ) : allProducts.length > 0 ? (
