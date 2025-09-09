@@ -7,13 +7,9 @@ import { Button } from '@/components/ui/button'
 import { SectionContainer } from './section-container'
 import { DatabaseService } from '@/lib/database-service'
 import { CATEGORIES } from '@/lib/constants'
+import { Category as BaseCategory } from '@/types'
 
-interface Category {
-  id: string
-  title: string
-  description: string
-  slug: string
-  image: string
+interface Category extends BaseCategory {
   productCount?: number
   featured?: boolean
 }
@@ -41,7 +37,17 @@ export function CategorySection() {
           // Keep using fallback categories from constants
           setCategories(CATEGORIES)
         } else if (data && data.length > 0) {
-          setCategories(data)
+          // Ensure all categories have the required properties
+          const categoriesWithDefaults: Category[] = data.map(cat => ({
+            id: typeof cat.id === 'string' ? parseInt(cat.id) : cat.id,
+            title: cat.title,
+            description: cat.description,
+            image: (cat as any).image || '/placeholder.svg',
+            slug: cat.slug || cat.title.toLowerCase().replace(/\s+/g, '-'),
+            productCount: (cat as any).productCount,
+            featured: (cat as any).featured
+          }))
+          setCategories(categoriesWithDefaults)
           setError(null)
         } else {
           // Fallback to constants if no data
