@@ -87,23 +87,22 @@ export default function HomePage() {
         <NewArrivalsCarousel />
       </main>
 
-      {/* This Week Top 4 */}
-      <section className="py-16 px-6 bg-white">
+      {/* This Week Top 4 - mobile: horizontal scroll, desktop: grid */}
+      <section className="py-16 px-2 md:px-6 bg-white">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-playfair font-bold text-gray-900 mb-4">
+          <div className="text-center mb-10 md:mb-16">
+            <h2 className="text-2xl md:text-4xl font-playfair font-bold text-gray-900 mb-3 md:mb-4">
               This Week's Top 4
             </h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
+            <p className="text-gray-600 max-w-md md:max-w-2xl mx-auto text-sm md:text-base">
               Discover our most popular pieces this week, handpicked by fashion enthusiasts
             </p>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {/* Mobile: horizontal scroll, Desktop: grid */}
+          <div className="flex md:grid md:grid-cols-2 lg:grid-cols-4 gap-9 md:gap-8 overflow-x-auto scrollbar-hide pb-2">
             {loading ? (
-              // Show loading skeleton
               Array(4).fill(null).map((_, i) => (
-                <div key={i} className="animate-pulse">
+                <div key={i} className="animate-pulse min-w-[220px] md:min-w-0">
                   <div className="bg-gray-200 h-64 rounded-lg mb-4"></div>
                   <div className="bg-gray-200 h-4 rounded mb-2"></div>
                   <div className="bg-gray-200 h-4 rounded w-3/4"></div>
@@ -111,18 +110,18 @@ export default function HomePage() {
               ))
             ) : topProducts.length > 0 ? (
               topProducts.map((product) => (
-                <SimpleProductCard
-                  key={product.id}
-                  product={product}
-                  onAddToCart={handleAddToCart}
-                  onToggleWishlist={handleToggleWishlist}
-                  onClick={handleProductClick}
-                  isWishlisted={wishlistedIds.has(product.id)}
-                />
+                <div key={product.id} className="min-w-[220px] md:min-w-0">
+                  <SimpleProductCard
+                    product={product}
+                    onAddToCart={handleAddToCart}
+                    onToggleWishlist={handleToggleWishlist}
+                    onClick={handleProductClick}
+                    isWishlisted={wishlistedIds.has(product.id)}
+                  />
+                </div>
               ))
             ) : (
-              // Show empty state
-              <div className="col-span-full text-center py-12">
+              <div className="w-full text-center py-12">
                 <p className="text-gray-500">No products available at the moment</p>
               </div>
             )}

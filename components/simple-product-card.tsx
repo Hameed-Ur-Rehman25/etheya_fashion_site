@@ -81,7 +81,7 @@ export function SimpleProductCard({
         {/* Favorite Icon - positioned at top-right within image */}
         <div className={cn(
           "absolute top-3 right-3 transition-all duration-300",
-          isHovered ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"
+          "md:opacity-0 md:group-hover:opacity-100 opacity-100 translate-y-0"
         )}>
           <Button
             size="icon"
