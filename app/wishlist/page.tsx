@@ -39,6 +39,7 @@ export default function WishlistPage() {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [filters, setFilters] = useState<SearchFilters>({
     categories: [],
+    subCategories: [],
     sizes: [],
     availability: [],
     types: [],
@@ -62,6 +63,7 @@ export default function WishlistPage() {
   const clearAllFilters = () => {
     setFilters({
       categories: [],
+      subCategories: [],
       sizes: [],
       availability: [],
       types: [],

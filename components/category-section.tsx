@@ -37,7 +37,7 @@ export function CategorySection() {
           // Keep using fallback categories from constants
           setCategories(CATEGORIES)
         } else if (data && data.length > 0) {
-          // Ensure all categories have the required properties
+          // Ensure all categories have the required properties and remove duplicates
           const categoriesWithDefaults: Category[] = data.map(cat => ({
             id: typeof cat.id === 'string' ? parseInt(cat.id) : cat.id,
             title: cat.title,
@@ -47,7 +47,13 @@ export function CategorySection() {
             productCount: (cat as any).productCount,
             featured: (cat as any).featured
           }))
-          setCategories(categoriesWithDefaults)
+          
+          // Remove duplicates based on title
+          const uniqueCategories = categoriesWithDefaults.filter((cat, index, self) => 
+            index === self.findIndex(c => c.title === cat.title)
+          )
+          
+          setCategories(uniqueCategories)
           setError(null)
         } else {
           // Fallback to constants if no data
@@ -105,11 +111,16 @@ export function CategorySection() {
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-        {categories.map((category) => (
-          <div
-            key={category.id}
-            className="group cursor-pointer transform transition-all duration-300 hover:-translate-y-2 hover:shadow-xl"
-          >
+        {categories.map((category, idx) => {
+          let key = String(category.id);
+          if (!key || key === 'NaN' || key === 'undefined') {
+            key = category.slug ? String(category.slug) : String(idx);
+          }
+          return (
+            <div
+              key={key}
+              className="group cursor-pointer transform transition-all duration-300 hover:-translate-y-2 hover:shadow-xl"
+            >
             <div className="relative overflow-hidden rounded-lg bg-gray-50">
               <Image
                 src={category.image || "/placeholder.svg"}
@@ -119,8 +130,8 @@ export function CategorySection() {
                 className="object-cover w-full h-110 group-hover:scale-105 transition-transform duration-500"
                 onError={(e) => {
                   // Fallback to placeholder if image fails to load
-                  const target = e.target as HTMLImageElement
-                  target.src = "/placeholder.svg"
+                  const target = e.target as HTMLImageElement;
+                  target.src = "/placeholder.svg";
                 }}
               />
               
@@ -147,8 +158,9 @@ export function CategorySection() {
                 </div>
               </div>
             </div>
-          </div>
-        ))}
+            </div>
+          );
+        })}
       </div>
     </SectionContainer>
   )

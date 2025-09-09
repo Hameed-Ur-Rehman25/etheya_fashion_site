@@ -439,8 +439,8 @@ export class DatabaseService {
         }
       })
 
-      const uniqueCategories = Array.from(categoryMap.entries()).map(([title, count]) => ({
-        id: title.toLowerCase().replace(/\s+/g, '-'),
+      const uniqueCategories = Array.from(categoryMap.entries()).map(([title, count], index) => ({
+        id: index + 1, // Use numeric ID to avoid conflicts
         title,
         description: `${title} collection`,
         slug: title.toLowerCase().replace(/\s+/g, '-'),
